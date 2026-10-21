@@ -1,0 +1,6 @@
+{
+  "name": "Shram Setu 2.0",
+  "description": "Verified Digital Work & Wage Records platform empowering unorganized and construction workers with tamper-proof Smart Shram Pass, geofenced muster roll, and statutory wage protection.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
