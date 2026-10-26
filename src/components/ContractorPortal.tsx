@@ -14,6 +14,7 @@ import { Worker, ConstructionSite, AttendanceRecord } from '../types';
 import { Language, t, formatCurrency, getLocalizedTrade } from '../services/i18n';
 import { speech } from '../services/speech';
 import { APP_CONFIG } from '../config';
+import { computeSha256Hex, canonicalSerialize } from '../services/cryptoAudit';
 
 interface ContractorPortalProps {
   workers: Worker[];
@@ -51,37 +52,46 @@ export const ContractorPortal: React.FC<ContractorPortalProps> = ({
     }
   };
 
-  const handleExecuteBulkPunch = () => {
+  const handleExecuteBulkPunch = async () => {
     if (selectedWorkerIds.length === 0) return;
 
     const now = new Date();
     const dateStr = now.toISOString().split('T')[0];
     const timeStr = now.toTimeString().split(' ')[0];
 
-    const newRecords: AttendanceRecord[] = selectedWorkerIds.map((wId) => {
-      const w = workers.find((item) => item.id === wId)!;
-      const randomHashPart = Math.random().toString(36).substring(2, 9);
+    const newRecords: AttendanceRecord[] = await Promise.all(
+      selectedWorkerIds.map(async (wId) => {
+        const w = workers.find((item) => item.id === wId)!;
+        const payload = {
+          workerId: w.id,
+          siteId: selectedSite.id,
+          date: dateStr,
+          timeIn: timeStr,
+          wage: w.dailyBaseWage,
+        };
+        const genuineHash = await computeSha256Hex(canonicalSerialize(payload));
 
-      return {
-        id: `ATT-${dateStr}-${w.id}-${Date.now().toString().slice(-4)}`,
-        workerId: w.id,
-        workerName: w.name,
-        siteId: selectedSite.id,
-        siteName: selectedSite.name,
-        date: dateStr,
-        timeIn: timeStr,
-        timeOut: '17:30:00',
-        shiftType: 'full_day',
-        baseHours: 8,
-        overtimeHours: 0,
-        calculatedWage: w.dailyBaseWage,
-        status: 'present',
-        supervisorName: 'Anil Sisodiya (JE)',
-        verificationHash: `SHA256:${randomHashPart}42ff`,
-        geoVerified: true,
-        notes: `Bulk supervisor verified roll on ${selectedSite.name}`,
-      };
-    });
+        return {
+          id: `ATT-${dateStr}-${w.id}-${Date.now().toString().slice(-4)}`,
+          workerId: w.id,
+          workerName: w.name,
+          siteId: selectedSite.id,
+          siteName: selectedSite.name,
+          date: dateStr,
+          timeIn: timeStr,
+          timeOut: '17:30:00',
+          shiftType: 'full_day',
+          baseHours: 8,
+          overtimeHours: 0,
+          calculatedWage: w.dailyBaseWage,
+          status: 'present',
+          supervisorName: 'Anil Sisodiya (JE)',
+          verificationHash: genuineHash,
+          geoVerified: true,
+          notes: `Bulk supervisor verified roll on ${selectedSite.name}`,
+        };
+      })
+    );
 
     onBulkPunchAttendance(newRecords);
     setBulkSuccess(true);
@@ -349,7 +359,7 @@ export const ContractorPortal: React.FC<ContractorPortalProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-[11px] text-slate-700">
               <div>
                 <span className="text-[10px] text-slate-500 font-sans block">{t('passCardUanLabel', lang)}</span>
-                <span className="font-bold">{lookupWorker.eShramUAN}</span>
+                <span className="font-bold">XXXX XXXX {lookupWorker.eShramUAN.replace(/\s/g, '').slice(-4)}</span>
               </div>
               <div>
                 <span className="text-[10px] text-slate-500 font-sans block">{t('passCardBocwLabel', lang)}</span>

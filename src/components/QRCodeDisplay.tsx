@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import QRCode from 'qrcode';
 
 interface QRCodeDisplayProps {
   value: string;
@@ -7,114 +8,66 @@ interface QRCodeDisplayProps {
 }
 
 /**
- * High-reliability SVG QR Code matrix renderer with standard finder squares,
- * timing alignment marks, and deterministic data bit simulation.
- * Ensures zero external package resolution issues while maintaining
- * realistic cryptographic QR code rendering.
+ * Standards-compliant ISO/IEC 18004 QR Code renderer using standard Reed-Solomon error correction.
+ * Scannable by any standard smartphone camera or QR scanning device.
  */
 export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
   value,
-  size = 120,
+  size = 140,
   className = '',
 }) => {
-  // Generate deterministic 25x25 matrix based on value hash
-  const gridSize = 25;
-  const matrix: boolean[][] = Array(gridSize)
-    .fill(null)
-    .map(() => Array(gridSize).fill(false));
+  const [dataUrl, setDataUrl] = useState<string>('');
+  const [hasError, setHasError] = useState(false);
 
-  // 1. Draw 7x7 Finder Pattern at (r, c)
-  const drawFinderPattern = (startRow: number, startCol: number) => {
-    for (let r = 0; r < 7; r++) {
-      for (let c = 0; c < 7; c++) {
-        // Outer 7x7 border
-        if (r === 0 || r === 6 || c === 0 || c === 6) {
-          matrix[startRow + r][startCol + c] = true;
+  useEffect(() => {
+    let isMounted = true;
+
+    QRCode.toDataURL(value, {
+      width: size * 2, // 2x density for crisp retina / print display
+      margin: 1,
+      color: {
+        dark: '#0f172a', // slate-900
+        light: '#ffffff',
+      },
+      errorCorrectionLevel: 'M',
+    })
+      .then((url) => {
+        if (isMounted) {
+          setDataUrl(url);
+          setHasError(false);
         }
-        // Inner 3x3 solid block
-        else if (r >= 2 && r <= 4 && c >= 2 && c <= 4) {
-          matrix[startRow + r][startCol + c] = true;
-        } else {
-          matrix[startRow + r][startCol + c] = false;
+      })
+      .catch((err) => {
+        console.warn('QR code generation error:', err);
+        if (isMounted) {
+          setHasError(true);
         }
-      }
-    }
-  };
+      });
 
-  // Top-Left Finder
-  drawFinderPattern(0, 0);
-  // Top-Right Finder
-  drawFinderPattern(0, gridSize - 7);
-  // Bottom-Left Finder
-  drawFinderPattern(gridSize - 7, 0);
+    return () => {
+      isMounted = false;
+    };
+  }, [value, size]);
 
-  // 2. Timing patterns (Row 6 and Col 6)
-  for (let i = 8; i < gridSize - 8; i++) {
-    matrix[6][i] = i % 2 === 0;
-    matrix[i][6] = i % 2 === 0;
+  if (hasError || !dataUrl) {
+    return (
+      <div
+        style={{ width: size, height: size }}
+        className={`bg-slate-50 border border-slate-200 rounded flex items-center justify-center p-2 text-center text-[10px] text-slate-400 ${className}`}
+      >
+        <span>Loading QR...</span>
+      </div>
+    );
   }
-
-  // 3. Small Alignment square near bottom right (16, 16)
-  const alignR = 16;
-  const alignC = 16;
-  for (let r = -2; r <= 2; r++) {
-    for (let c = -2; c <= 2; c++) {
-      if (Math.abs(r) === 2 || Math.abs(c) === 2 || (r === 0 && c === 0)) {
-        matrix[alignR + r][alignC + c] = true;
-      }
-    }
-  }
-
-  // 4. Populate data area deterministically with string hash bits
-  let hash = 0;
-  for (let i = 0; i < value.length; i++) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
-  }
-
-  let bitIdx = 0;
-  for (let r = 0; r < gridSize; r++) {
-    for (let c = 0; c < gridSize; c++) {
-      // Skip finder zones
-      const inTopLeft = r < 8 && c < 8;
-      const inTopRight = r < 8 && c >= gridSize - 8;
-      const inBottomLeft = r >= gridSize - 8 && c < 8;
-      const inTiming = r === 6 || c === 6;
-      const inAlignment = r >= 14 && r <= 18 && c >= 14 && c <= 18;
-
-      if (!inTopLeft && !inTopRight && !inBottomLeft && !inTiming && !inAlignment) {
-        // pseudo-random bit from hash and coordinates
-        const seed = (hash ^ (r * 19) ^ (c * 23) ^ bitIdx) % 100;
-        matrix[r][c] = seed % 2 === 0;
-        bitIdx++;
-      }
-    }
-  }
-
-  const cellSize = size / gridSize;
 
   return (
-    <svg
+    <img
+      src={dataUrl}
+      alt="Standards-compliant QR Code for worker reference"
       width={size}
       height={size}
-      viewBox={`0 0 ${size} ${size}`}
-      className={`bg-white select-none ${className}`}
-      aria-label={`QR Code for ${value.slice(0, 30)}`}
-    >
-      <rect width={size} height={size} fill="white" />
-      {matrix.map((row, r) =>
-        row.map((cell, c) =>
-          cell ? (
-            <rect
-              key={`${r}-${c}`}
-              x={c * cellSize}
-              y={r * cellSize}
-              width={cellSize + 0.1}
-              height={cellSize + 0.1}
-              fill="#0f172a"
-            />
-          ) : null
-        )
-      )}
-    </svg>
+      className={`select-none bg-white rounded-md shadow-xs ${className}`}
+      style={{ width: size, height: size }}
+    />
   );
 };

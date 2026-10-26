@@ -174,6 +174,8 @@ export const translations = {
     ledgerSlipCopied: 'Slip Copied!',
     ledgerRecordAdvanceBtn: 'Record Advance / Pay',
     ledgerGrossCardTitle: 'Gross Earned Wages',
+    ledgerTotalEarnedCardTitle: 'Gross Earned Wages',
+    ledgerEarnedSubtitle: 'Muster-verified statutory earnings',
     ledgerGrossDaysVerified: 'days verified',
     ledgerAdvancesCardTitle: 'Advances Taken (Kharcha)',
     ledgerAdvancesSubtitle: 'Ration & Emergency support',
@@ -236,7 +238,7 @@ export const translations = {
     contractorDept: 'PWD / Urban Govt.',
     contractorWorkforce: 'Active Workforce',
     contractorShramRegd: '100% Shram Pass Registered',
-    contractorAuditCleared: 'BOCW Cess & Minimum Wage Audit Cleared (Indore Zone)',
+    contractorAuditCleared: 'Demonstration Muster Roll Status (Indore Zone)',
     contractorInspectTitle: 'Indore Infrastructure Engineering Inspection',
     contractorInspectSub: 'Daily Muster Verification & Safety Compliance',
     contractorBulkHeading: 'Crew Quick Muster Punch (Bulk Verification)',
@@ -266,12 +268,15 @@ export const translations = {
     grievanceSiteLabel: 'Construction Site Location',
     grievanceSitePlaceholder: 'e.g. Super Corridor Ring Road Project',
     grievanceReasonLabel: 'Dispute Classification',
+    grievanceTypeLabel: 'Dispute Classification',
     grievanceReasonUnpaid: 'Unpaid Daily Wages (Denial of wages)',
     grievanceReasonDeduction: 'Arbitrary Pay Cut (Unauthorized deduction)',
     grievanceReasonOvertime: 'Denied Overtime Wages (Unpaid extra hours)',
     grievanceReasonSafety: 'Safety Gear & Hazard Violation',
     grievanceDescLabel: 'Incident Details & Timeline',
+    grievanceStatementLabel: 'Worker Statement / Claim Details',
     grievanceDescPlaceholder: 'Describe when work was completed, contractor responses, and dates...',
+    grievanceStatementPlaceholder: 'Describe when work was completed, contractor responses, and dates...',
     grievanceSubmitBtn: 'Submit & Generate Legal Notice',
     grievanceActiveTitle: 'Active Grievance Cases & DLO Status',
     grievanceCasesCount: 'cases',
@@ -500,6 +505,8 @@ export const translations = {
     ledgerSlipCopied: 'पर्ची कॉपी हो गई!',
     ledgerRecordAdvanceBtn: 'खर्चा / भुगतान दर्ज करें',
     ledgerGrossCardTitle: 'कुल अर्जित मजदूरी',
+    ledgerTotalEarnedCardTitle: 'कुल अर्जित मजदूरी',
+    ledgerEarnedSubtitle: 'मस्टर सत्यापित सांविधिक आय',
     ledgerGrossDaysVerified: 'दिनों का कार्य सत्यापित',
     ledgerAdvancesCardTitle: 'कुल अग्रिम खर्चा (कटौती)',
     ledgerAdvancesSubtitle: 'पारिवारिक राशन व दवाई खर्च',
@@ -562,7 +569,7 @@ export const translations = {
     contractorDept: 'पी.डब्ल्यू.डी. / नगर निगम',
     contractorWorkforce: 'सक्रिय कार्यबल',
     contractorShramRegd: '100% श्रम पास पंजीकृत',
-    contractorAuditCleared: 'बीओसीडब्ल्यू सेस एवं न्यूनतम मजदूरी ऑडिट स्वीकृत (इंदौर क्षेत्र)',
+    contractorAuditCleared: 'डेमो मस्टर रोल स्थिति (इंदौर क्षेत्र)',
     contractorInspectTitle: 'इंदौर सिविल इंजीनियरिंग निरीक्षण',
     contractorInspectSub: 'दैनिक मस्टर सत्यापन एवं सुरक्षा अनुपालन',
     contractorBulkHeading: 'दैनिक दल हाजिरी (एक-क्लिक थोक सत्यापन)',
@@ -592,12 +599,15 @@ export const translations = {
     grievanceSiteLabel: 'कार्य स्थल (साइट का नाम)',
     grievanceSitePlaceholder: 'उदा. सुपर कॉरिडोर रिंग रोड प्रोजेक्ट',
     grievanceReasonLabel: 'शिकायत का मुख्य कारण',
+    grievanceTypeLabel: 'शिकायत का मुख्य कारण',
     grievanceReasonUnpaid: 'अर्जित मजदूरी का अनाधिकृत रूप से रोका जाना',
     grievanceReasonDeduction: 'मजदूरी में से अवैध व मनमानी कटौती',
     grievanceReasonOvertime: 'ओवरटाइम कार्य का भुगतान न किया जाना',
     grievanceReasonSafety: 'सुरक्षा उपकरण व जान-माल का खतरा',
     grievanceDescLabel: 'घटना का पूरा विवरण',
+    grievanceStatementLabel: 'श्रमिक का कथन व घटना विवरण',
     grievanceDescPlaceholder: 'मजदूरी किस तारीख से रोकी गई, ठेकेदार ने क्या कहा...',
+    grievanceStatementPlaceholder: 'मजदूरी किस तारीख से रोकी गई, ठेकेदार ने क्या कहा...',
     grievanceSubmitBtn: 'शिकायत दर्ज करें व आवेदन पत्र बनाएं',
     grievanceActiveTitle: 'पंजीकृत विवाद व कानूनी स्थिति',
     grievanceCasesCount: 'प्रकरण',
@@ -723,9 +733,10 @@ export function t(
 /**
  * Currency formatter respecting Indian numbering format
  */
-export function formatCurrency(amount: number): string {
-  const formatted = Math.abs(amount).toLocaleString('en-IN');
-  return amount < 0 ? `-₹${formatted}` : `₹${formatted}`;
+export function formatCurrency(amount?: number | null): string {
+  const num = typeof amount === 'number' && !isNaN(amount) ? amount : 0;
+  const formatted = Math.abs(num).toLocaleString('en-IN');
+  return num < 0 ? `-₹${formatted}` : `₹${formatted}`;
 }
 
 /**

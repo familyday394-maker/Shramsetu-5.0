@@ -1,0 +1,972 @@
+# SHR​AM SETU 2.0 — ARCHITECTURE RECOVERY, CRITICAL REPAIR AND SYSTEM RESTORATION
+
+## 0. Mission
+
+You are working on the existing Shram Setu 2.0 website, a React/TypeScript web project intended to make daily-wage work records, wage calculations, payments and disputes transparent.
+
+The project has experienced substantial architectural regressions. Previous implementation summaries claimed features that the latest source audit could not find, including IndexedDB, a genuine QR scanner, cryptographic audit verification, anomaly detection and account authentication.
+
+Your responsibility is to recover the current application and align it with the intended architecture, while preserving functionality that genuinely works.
+
+**Do not merely generate another audit report. Implement the necessary repairs, restore the missing functionality and verify the results.**
+
+Work in controlled stages, starting with the most serious defects. Run tests after each stage, fix regressions before proceeding, and produce a final report. If a required external service or credential is unavailable, complete the independent local work and clearly report the blocker.
+
+The defining innovation remains:
+
+**TRANSPARENCY — every wage explained, every change traceable, every payment status explicit, and every disagreement visible.**
+
+The project must remain a responsive website. Do not convert it into a native mobile application.
+
+---
+
+## 1. NON-NEGOTIABLE DEVELOPMENT RULES
+
+1. Inspect the current source code before modifying it. Do not assume earlier implementation summaries are accurate.
+2. Preserve the existing project and its useful components. Do not replace the application with a new template.
+3. Create a restoration point before destructive changes. Use Git if available; otherwise preserve the relevant files and export current records.
+4. Never run destructive tests against real records or the only copy of the demo dataset.
+5. Do not delete, reset or migrate existing data without explicit safeguards.
+6. Keep real application data and Judge Demo data strictly separate.
+7. Do not fabricate users, credentials, Supabase connections, test results or security guarantees.
+8. Do not introduce blockchain, NFC hardware, SMS OTP, unnecessary AI APIs or unrelated features.
+9. Do not create multiple competing mock databases or duplicate business logic.
+10. Keep existing useful wage-calculation, correction, payment, dispute and audit components where they work correctly.
+11. Remove false interface claims such as “IndexedDB Active,” “Supabase Connected,” “QR Verified,” “Blockchain Verified” or “Legal Audit Cleared” unless they accurately reflect tested functionality.
+12. Never expose privileged backend keys or credentials in browser code, screenshots, logs, generated reports or exported records.
+13. Do not present the project as production-ready simply because the build succeeds.
+14. Do not stop after identifying issues: repair what can be repaired in the available environment.
+15. Do not continue into unrelated development after the acceptance criteria for this recovery have been satisfied.
+
+Keep explanations in the completion report concise. Spend effort on correct code, consistent architecture and reproducible tests rather than verbose progress messages.
+
+---
+
+# STAGE 1 — ESTABLISH THE REAL CURRENT STATE
+
+Inspect the whole current repository, not just the homepage.
+
+Review:
+
+- `package.json` and available scripts.
+- React entry point and routing.
+- Existing application components.
+- `src/types/index.ts` and related domain models.
+- `src/services/db.ts` or its current equivalent.
+- Wage calculation utilities.
+- Worker and contractor dashboards.
+- Worker pass and QR components.
+- Dispute and audit components.
+- Test scripts and test fixtures.
+- Environment-variable handling.
+- Existing Supabase dependencies and configuration.
+- Existing local storage and IndexedDB usage.
+- PWA manifest and service-worker configuration.
+- Current responsive styles and design tokens.
+
+Use the previous regression audit as a list of suspected problems, not as a substitute for checking the current source.
+
+Create a concise internal inventory of the features that genuinely work, are simulated, are incomplete or are missing.
+
+Then proceed with the repairs below. Do not replace this implementation work with another report-only response.
+
+---
+
+# STAGE 2 — FIX CRITICAL DATA AND PRIVACY DEFECTS FIRST
+
+## 2.1 Wage calculation correctness
+
+The previous audit reported that recording a weekly settlement could increase the outstanding balance instead of reducing it.
+
+Inspect the actual implementation in the current wage ledger and database service.
+
+Restore one authoritative calculation engine, preferably a shared `calculateRecordBreakdown` utility or an equivalent function adapted to the current domain model.
+
+Separate these concepts:
+
+- Gross wages earned.
+- Additions and allowances.
+- Itemized deductions.
+- Net wages due.
+- Payments recorded.
+- Payments acknowledged as received.
+- Outstanding recorded balance.
+- Disputed or unverified amounts.
+
+Never treat a payment as new earnings.
+
+Use integer paise internally where practical for money calculations. Avoid inconsistent rounding and duplicated formulas across components.
+
+Use the following acceptance case:
+
+- Agreed wage: ₹650 per day.
+- Recorded work: 4 days.
+- Gross wages: ₹2,600 before any additional adjustments.
+- Payment recorded: ₹1,300.
+- Outstanding recorded balance: ₹1,300.
+- Worker acknowledgment: pending.
+
+Verify the calculation throughout the homepage, worker dashboard, contractor dashboard, inspector and audit views.
+
+If overpayment occurs, represent it explicitly rather than silently hiding it by clamping a negative balance.
+
+Deduplicate payment entries using stable unique IDs and enforce uniqueness through the data layer where possible.
+
+An advance, payment, wage earning, deduction and correction must each have a clearly defined accounting effect.
+
+## 2.2 Payment acknowledgment
+
+Maintain separate statuses:
+
+- Unpaid.
+- Partially paid.
+- Recorded as paid by the contractor.
+- Acknowledged as received by the worker.
+- Disputed.
+
+A contractor must not automatically mark a payment as worker-acknowledged.
+
+A payment acknowledgment must identify the authorized worker who responded and preserve when the response was recorded.
+
+Do not represent a simulated acknowledgment as a real authenticated signature.
+
+## 2.3 Protect data from accidental deletion
+
+The previous audit found that the footer reset button could delete user-entered records without confirmation.
+
+Inspect all reset and initialization actions.
+
+Implement these rules:
+
+- Demo reset affects only the isolated demonstration dataset.
+- Real authenticated records must never be deleted by a demo-reset action.
+- Every destructive action must clearly explain which data will be affected.
+- Prevent accidental repeated reset operations.
+- Never silently replace corrupted or inaccessible user records with mock data.
+- Preserve recoverable data and provide a clear recovery path.
+- Test reset and recovery with dedicated fixtures rather than real user records.
+
+Use a proper confirmation interface consistent with the current website.
+
+## 2.4 Remove personal information from QR codes
+
+Inspect the actual QR payload generation and worker lookup implementation.
+
+Remove Aadhaar information, personal phone numbers, wage rates, outstanding balances and confidential work history from QR payloads.
+
+The QR must encode only a suitable opaque reference or working application URL.
+
+Restrict worker lookup to permitted information. A predictable worker ID must not grant access to private records.
+
+Do not retain unnecessary Aadhaar-related fields in demonstration QR payloads or expose them through public lookup.
+
+## 2.5 Remove false technical claims
+
+Audit all interface labels, badges, reports and help text.
+
+Correct claims concerning IndexedDB, Supabase, cryptographic verification, anomaly detection, physical attendance, wage compliance and legally verified records.
+
+If a feature is simulated, label it as a demonstration.
+
+If a feature is absent, do not display it as operational.
+
+If a legal benchmark has not been verified, label it unverified rather than declaring a legal audit passed.
+
+---
+
+# STAGE 3 — RESTORE THE ORIGINAL APPLICATION ARCHITECTURE
+
+The application must have a clear separation between the user interface, business logic, data access, persistence, authentication and synchronization.
+
+Adapt the existing repository rather than blindly creating every suggested folder.
+
+## 3.1 Domain model
+
+Define one consistent logical model for the entities the project actually needs:
+
+- User profiles.
+- Worker profiles.
+- Contractor profiles.
+- Worker-to-contractor assignments.
+- Work records and agreed wage terms.
+- Payment records.
+- Worker acknowledgments.
+- Correction and audit events.
+- Disputes and responses.
+- QR credential references.
+- Approval requests.
+- Anomaly findings.
+- Synchronization operations.
+
+Use stable IDs, explicit statuses, schema versions and appropriate foreign-key relationships.
+
+Do not mix authentication credentials with wage records.
+
+Do not duplicate financial facts inside unrelated records if they can be calculated from authoritative entries.
+
+## 3.2 Repository and service boundaries
+
+Create an asynchronous, Promise-based data-access abstraction.
+
+The UI must not depend directly on synchronous database methods or issue ad hoc queries to several unrelated stores.
+
+Use appropriate repository interfaces or services for:
+
+- Authentication and profiles.
+- Workers and contractor assignments.
+- Work records.
+- Payments.
+- Disputes.
+- Approval requests.
+- Audit verification.
+- Synchronization.
+
+Both IndexedDB and Supabase must implement compatible operations against the same logical data model.
+
+Business rules, especially wage calculations and audit explanations, must not be independently rewritten in each adapter.
+
+Use one authoritative calculation engine.
+
+## 3.3 Database portability
+
+Keep the domain model independent of the persistence provider.
+
+The intended architecture is:
+
+**Shared domain logic → repository interfaces → IndexedDB adapter and Supabase adapter.**
+
+Prepare for a future SQLite or other local SQL adapter without implementing an additional database engine unnecessarily in this recovery.
+
+PostgreSQL migrations must not be assumed to work unchanged in SQLite.
+
+Create a versioned, validated JSON interchange format for data portability and backups.
+
+Do not silently change the meaning of existing records during a migration.
+
+---
+
+# STAGE 4 — IMPLEMENT REAL INDEXEDDB STORAGE
+
+The previous audit reported that the application uses localStorage and an in-memory fallback despite claiming IndexedDB support.
+
+Inspect the current implementation and migrate the persistent local demo and offline data storage to genuine IndexedDB.
+
+Use native IndexedDB or one suitable existing lightweight abstraction. Do not install multiple competing storage libraries.
+
+## 4.1 Storage design
+
+Create a versioned database with object stores and indexes appropriate to the actual model.
+
+At minimum, accommodate:
+
+- Workers.
+- Work records.
+- Payments.
+- Disputes.
+- Audit events.
+- Approval requests.
+- Pending synchronization operations.
+- Local metadata and schema versioning.
+
+Use transactions to maintain consistency when one operation changes several related records.
+
+Use a proper schema-upgrade process.
+
+## 4.2 Existing data migration
+
+If useful data exists in the current localStorage database:
+
+1. Preserve an export or backup of the old data.
+2. Validate and migrate supported records into IndexedDB.
+3. Check the migrated record count and relationships.
+4. Verify that wage calculations remain unchanged.
+5. Make the migration safe to rerun without creating duplicates.
+6. Do not delete the source records until successful migration has been verified and recovery is possible.
+
+Handle parsing errors and storage quota failures without silently replacing user data.
+
+## 4.3 Offline behaviour
+
+Support the local operations the current application can perform safely without a backend.
+
+Show accurate states, such as:
+
+- Saved locally.
+- Pending synchronization.
+- Online and connected.
+- Synchronization failed.
+- Conflict requires review.
+
+Do not claim that data is shared between browsers or devices when it is only in IndexedDB on one device.
+
+Local browser storage is not automatically encrypted or protected against someone controlling the device. Explain this limitation.
+
+---
+
+# STAGE 5 — RESTORE AND VERIFY SUPABASE CONNECTIVITY
+
+Inspect the existing project carefully before changing Supabase configuration.
+
+The previous audit reported that no Supabase client package, SQL migrations, RLS policies or asynchronous repository abstraction existed. Determine whether this is still true.
+
+If actual Supabase configuration and dependencies exist, verify and restore the connection where possible.
+
+If the project is not configured, prepare the integration but do not invent credentials or claim the backend is connected.
+
+Official implementation references:
+
+- Supabase React quickstart: https://supabase.com/docs/guides/getting-started/quickstarts/reactjs
+- Supabase Row Level Security: https://supabase.com/docs/guides/database/postgres/row-level-security
+- Supabase Realtime: https://supabase.com/docs/guides/realtime
+
+## 5.1 Environment configuration
+
+Use a centralized Supabase client module.
+
+Where applicable, support:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+
+Do not assume the configuration is correct just because the variables exist.
+
+Validate that the URL is well formed, the client initializes and a safe test request succeeds.
+
+If configuration is missing, continue to support Local Demo Mode and provide a clear configuration status.
+
+Do not block the entire website because Supabase is not configured.
+
+Never put a service-role or other privileged secret into frontend code. Public browser keys must be protected by correct database permissions, not treated as secret authentication tokens.
+
+## 5.2 SQL migrations
+
+Create version-controlled SQL migrations for the real application schema.
+
+Include the necessary profile, worker, contractor assignment, work record, payment, acknowledgment, dispute, audit event and approval request structures as supported by the domain model.
+
+Use proper keys, indexes, constraints and relationships.
+
+Do not create a second unrelated schema for the judge demo.
+
+Keep the demo's data in a separate local dataset unless explicit demo-specific remote storage is deliberately implemented.
+
+## 5.3 Authentication
+
+Implement genuine account creation, sign-in, sign-out and persistent authenticated sessions using Supabase Auth when configuration is available.
+
+Provide separate registration paths for:
+
+- Worker.
+- Contractor.
+
+Create a secure profile-to-authentication-user relationship.
+
+A client-selected role must not grant unrestricted privileges.
+
+Use a trusted role and assignment model. Contractor accounts must only manage permitted workers; workers must only see their own permitted records.
+
+Do not pretend a role selector is real authentication.
+
+If Supabase is unavailable, allow explicitly labelled Local Demo Mode without storing passwords or claiming real security.
+
+## 5.4 Row Level Security
+
+Enable RLS and define explicit permissions for all exposed tables that contain private or operational data.
+
+The policies must ensure that:
+
+- A worker cannot read another worker's private records by changing a URL or ID.
+- A contractor cannot access workers or wage records outside their authorization scope.
+- A user cannot fabricate another user's acknowledgment.
+- A user cannot assign themselves privileged roles through client-side profile editing.
+- Approval requests can only be viewed and responded to by the authorized parties.
+- Audit records cannot be modified through an unauthorized UI action.
+
+Create database-level allow/deny tests where the environment permits them.
+
+Do not call the integration complete until the actual configured policies have been inspected and tested.
+
+## 5.5 Real-time connection
+
+When a valid Supabase project is configured, establish the shared online data path and the required Realtime subscriptions for approval requests and relevant status updates.
+
+Handle connection errors, reconnects, duplicate events and expired sessions.
+
+Do not display false success states when a write fails.
+
+If credentials are unavailable, mark these remote tests BLOCKED BY CONFIGURATION rather than PASSED.
+
+---
+
+# STAGE 6 — REAL ACCOUNT SEPARATION AND WORKER APPROVAL
+
+The main website needs genuine accounts, while the Judge Demo must remain separate.
+
+## 6.1 Main website
+
+Provide:
+
+- Registration.
+- Sign-in.
+- Sign-out.
+- Worker profile.
+- Contractor profile.
+- Protected worker records.
+- Protected contractor workspace.
+- Authorized contact details.
+- Session-aware navigation.
+
+Use existing page components wherever practical.
+
+Keep role-specific registration and protected record access distinct from the demonstration role selector.
+
+## 6.2 Judge Demo isolation
+
+Create a distinct Judge Demo entry, route or clearly separated mode with its own synthetic dataset.
+
+The demo may include:
+
+- Worker role selection.
+- Contractor role selection.
+- Auditor/judge role selection.
+- Preloaded synthetic workers.
+- Wage calculation inspector.
+- Payment states.
+- Correction history.
+- Dispute preservation.
+- Audit verification and controlled corruption tests.
+- Anomaly detection.
+- QR pass generation and scanning.
+- Data reset and recovery.
+- Clear demo-status labels.
+
+The demo must be reproducible and easy to use without backend credentials.
+
+Demo roles are simulations, not secure authenticated accounts.
+
+Do not let demo reset delete real authenticated data. Where possible, use separate database names or well-defined data namespaces and enforce the separation in the repository layer.
+
+## 6.3 Contact details and trust checks
+
+Where a worker or contractor has consented to share contact details, display the permitted name, organization and phone number in the appropriate authenticated workflow.
+
+Provide a contact link where practical.
+
+Clearly distinguish supplied contact information from independently verified contact information.
+
+Do not expose a worker's private phone number or wage history publicly through the QR.
+
+Contact details help parties cross-check a request, but a phone number or phone call is not definitive proof of identity.
+
+## 6.4 Approval workflow
+
+Implement the genuine connected workflow where Supabase is configured:
+
+1. An authenticated contractor scans the permanent worker QR.
+2. The system resolves the opaque worker reference without exposing private data.
+3. The contractor creates an approval request tied to a specific work record and action.
+4. The worker receives the request in their authenticated account.
+5. The worker inspects the request details and permitted contractor contact information.
+6. The worker approves, rejects or reports a suspicious request.
+7. The backend verifies authorization and accepts only a valid state transition.
+8. The contractor sees the genuine updated status.
+9. An appropriate audit event records the decision and relevant metadata.
+
+Prevent duplicate approval, replay and unauthorized status changes.
+
+Use a unique request ID, intended worker ID, initiating contractor ID, specific record/action, expiration and response status.
+
+If no backend is configured, the demo may simulate the flow, but must label it **SIMULATED DEMO APPROVAL**.
+
+Do not claim that a local click delivers a request to another device.
+
+---
+
+# STAGE 7 — REPAIR REAL QR GENERATION AND SCANNING
+
+The previous audit identified a simulated SVG matrix instead of a standards-compliant QR code and a dummy scanning delay.
+
+Replace the fake representation with a genuine, standards-compliant QR encoding implementation.
+
+Use one suitable, maintained QR generation/scanning library if necessary. Avoid unnecessary dependencies.
+
+## 7.1 QR payload
+
+The reusable worker QR should contain a reference or a working URL for the correct environment.
+
+Never include:
+
+- Aadhaar numbers or fragments.
+- Phone numbers.
+- Wage amounts.
+- Outstanding balances.
+- Private attendance or payment history.
+- Passwords, API keys or privileged credentials.
+
+Use secure random token generation where an opaque token is required. If secure randomness is unavailable, fail safely rather than using predictable timestamps or Math.random().
+
+A QR identifies a worker reference; it does not authenticate that worker.
+
+A copied QR must not directly authorize approval or expose private information.
+
+Provide credential revocation or replacement where supported by the data model.
+
+## 7.2 Real scanning
+
+The QR scanner must actually decode a QR using a supported camera/scanning mechanism.
+
+Test it with a physical phone camera and a printed card.
+
+Where browser camera access is unavailable, blocked or requires a secure context, provide an honest fallback such as manual reference entry or scanning through the device's native camera.
+
+Do not fake a successful scan with a timer or hardcoded lookup.
+
+For the local laptop-hosted demonstration, ensure that generated QR URLs use an actual reachable base URL. Do not hardcode an undeployed production domain.
+
+Document any local HTTPS or camera permission requirements.
+
+## 7.3 QR tests
+
+Verify that:
+
+- Two workers have distinct references.
+- The printed QR can be scanned by a real device.
+- The QR payload exposes no private wage data.
+- A valid reference resolves to the intended worker.
+- An unknown or revoked reference fails safely.
+- A copied QR alone cannot access protected records.
+- Authorization remains necessary for private actions.
+
+---
+
+# STAGE 8 — RESTORE THE CRYPTOGRAPHIC AUDIT ENGINE
+
+The previous source audit found fabricated hash strings rather than genuine SHA-256 verification.
+
+Implement actual digest calculation and chain verification.
+
+## 8.1 Canonical serialization
+
+Define one deterministic canonical representation for each integrity-relevant event.
+
+Include the fields necessary to detect unauthorized changes to work agreements, recorded hours, wage calculations, payments, acknowledgments, corrections and disputes.
+
+The representation must be stable, versioned and independent of UI formatting.
+
+Keep one authoritative serialization and hashing implementation.
+
+Use the actual Web Crypto SHA-256 implementation or another correctly implemented standard SHA-256 implementation. Do not generate fake hashes or random hash-looking strings.
+
+Since Web Crypto digest operations are asynchronous, use an asynchronous design unless an actual tested implementation requires otherwise.
+
+## 8.2 Audit history
+
+Every relevant correction or event must be appended as a new event with stable identifiers and appropriate prior-event references.
+
+Verify the digest, previous-hash linkage, expected sequence and history completeness independently.
+
+Where concurrent remote writes could create competing sequence numbers, use an appropriate transactional backend mechanism or a design that avoids falsely claiming a globally ordered chain.
+
+Never trust a client-supplied digest without recomputing it.
+
+Distinguish client-recorded time from server-received time.
+
+## 8.3 Required outcomes
+
+Implement and test these distinct outcomes:
+
+1. Integrity check passed for the records examined.
+2. Record modification detected.
+3. Previous history incomplete or linkage broken.
+4. Verification could not be completed.
+
+An individual digest passing does not imply that the entire chain is valid.
+
+A locally controlled hash chain cannot guarantee protection against an attacker who can rewrite all records and recompute all hashes. Explain this honestly.
+
+Use trusted external checkpoints or independent signatures only if actually implemented.
+
+---
+
+# STAGE 9 — RESTORE EXPLAINABLE ANOMALY DETECTION
+
+Implement the actual deterministic rules. Do not add AI scoring or produce automatic accusations.
+
+### RULE-01: Duplicate work entries
+
+Detect overlapping or duplicate entries using appropriate worker, date, time and record identifiers.
+
+### RULE-02: Excessive continuous shift duration
+
+Use individual shift start/end times and available break information.
+
+A record containing four days of eight-hour work must not be treated as a continuous 32-hour shift.
+
+Clearly report when the necessary timing information is unavailable.
+
+### RULE-03: Retroactive modification
+
+Use the actual change history and integrity information to flag unexpected changes.
+
+### RULE-04: Payment reconciliation
+
+Compare net wages due, all valid unique payment entries and the outstanding recorded balance.
+
+Do not allow duplicate payments or incorrect entry signs to create false totals.
+
+### RULE-05: Unreasoned deductions
+
+Flag deductions without a valid explanation.
+
+### RULE-06: Overdue balance
+
+Use a configurable demonstration threshold. Do not present a seven-day threshold as a universal legal requirement unless its applicability has been independently established.
+
+### RULE-07: Minimum-wage comparison
+
+Use a verified, applicable official wage notification, including category, locality and effective date.
+
+The previous ₹505/day and ₹412/day values were identified as unverified prototype references. Do not represent them as legally valid benchmarks without authoritative verification.
+
+If verification is unavailable, label the benchmark unverified or disable the legal comparison.
+
+Every anomaly must show:
+
+- Rule ID.
+- Rule name.
+- Values examined.
+- Trigger condition.
+- Reason for the warning.
+- Neutral suggested review action.
+
+A warning indicates a potential discrepancy, not proven misconduct.
+
+---
+
+# STAGE 10 — RESTORE DISPUTE PRESERVATION
+
+Implement the complete dispute workflow using the shared domain model.
+
+A dispute should preserve:
+
+- The relevant work record.
+- The worker's original statement.
+- The contractor's response.
+- The disputed field or amount.
+- Supporting evidence references.
+- Creation and update timestamps.
+- Actor roles.
+- Status transitions.
+- Subsequent corrections.
+- Unresolved facts.
+
+Use clear statuses such as Open, Awaiting Response, Under Review and Resolved.
+
+Do not silently replace one party's statement with another.
+
+Do not automatically declare either account truthful.
+
+Ensure the Worker Portal, Contractor Portal, Disputes Desk and Audit Check reference the same underlying records.
+
+Keep sensitive supporting data private and apply appropriate authorization rules.
+
+---
+
+# STAGE 11 — FIX THE MOBILE UI AND RESPONSIVENESS
+
+The current website has a mobile display problem that needs to be identified from the actual implementation rather than guessed.
+
+Inspect and test the existing UI across small and large mobile viewports, tablet sizes and desktop.
+
+At minimum, evaluate:
+
+- 320 px.
+- 360 px.
+- 390 px.
+- 430 px.
+- 768 px.
+- 1024 px.
+- Desktop widths.
+
+Fix actual problems with:
+
+- Horizontal page overflow.
+- Navigation drawer and menu stacking.
+- Oversized hero headings.
+- Wage tables extending beyond the screen.
+- Modal dialogs exceeding viewport height.
+- Inspector tabs becoming inaccessible.
+- Forms and buttons being clipped.
+- QR cards overflowing their containers.
+- Long phone numbers, IDs and audit explanations.
+- Incorrect fixed positioning and sticky elements.
+- Text contrast and small touch targets.
+- Keyboard focus and mobile form usability.
+
+Do not simply hide overflow to conceal broken layouts.
+
+Use responsive layouts, sensible wrapping, appropriate container widths and horizontally scrollable data tables only where necessary.
+
+Preserve the forest-green and warm-cream design identity and existing desktop functionality.
+
+Do not create an arbitrary new visual theme.
+
+If automated browser or screenshot inspection is available, use it. Otherwise run the available tests and provide precise manual checks for any UI behaviour that cannot be verified automatically.
+
+---
+
+# STAGE 12 — PWA AND OFFLINE-FIRST SUPPORT
+
+Implement genuine Progressive Web App capabilities while preserving the website architecture.
+
+## 12.1 Application shell
+
+Where the existing framework permits, add a suitable web manifest and service worker to cache essential static resources.
+
+Do not cache confidential API responses or authenticated worker records indiscriminately.
+
+Do not claim full offline functionality until the required workflows work while disconnected.
+
+## 12.2 Local operations
+
+Use IndexedDB as the persistent local store and pending-operation queue.
+
+An operation should have a unique event ID, operation type, schema version, related entity IDs, appropriate event timestamp and explicit synchronization status.
+
+Keep the local and remote repositories compatible with the same domain model.
+
+## 12.3 Synchronization
+
+When Supabase is configured:
+
+- Sync eligible pending operations.
+- Use idempotent writes and stable operation IDs.
+- Prevent duplicate attendance, payments and approval events.
+- Preserve conflicting records.
+- Do not silently overwrite wage agreements or worker statements.
+- Mark an operation synced only after the remote backend confirms persistence.
+- Preserve pending operations on failure.
+- Display meaningful connection and conflict states.
+
+The shared backend is authoritative for online records. IndexedDB holds the local copy and offline queue.
+
+Do not assume different offline devices share data.
+
+Do not represent an offline worker approval as server verified.
+
+---
+
+# STAGE 13 — SEPARATE THE REAL WEBSITE FROM JUDGE DEMO
+
+This separation is essential.
+
+## 13.1 Main website
+
+The main website must contain the real account experience when Supabase is configured:
+
+- Worker registration and sign-in.
+- Contractor registration and sign-in.
+- Authenticated profiles and sessions.
+- Authorized private records.
+- Worker approval inbox.
+- Protected wage and payment history.
+- Real cross-device approval requests.
+
+Do not use a demo role selector as real authentication.
+
+## 13.2 Judge Demo
+
+Provide a distinct Judge Demo route or mode with its own isolated synthetic dataset.
+
+Preserve the existing visual design and useful presentation components.
+
+Include:
+
+- Synthetic workers.
+- Worker and contractor demo roles.
+- Wage calculations.
+- Payment states.
+- Corrections and audit history.
+- Disputes with both parties' statements.
+- QR pass creation and physical scanning.
+- Anomaly explanations.
+- Audit verification.
+- Controlled tampering scenarios.
+- Safe baseline reset.
+- Data export and restore.
+- The existing Judges' Tour where available.
+
+Clearly label all demo information and simulated approvals.
+
+The demo must work without Supabase credentials.
+
+Its reset must not delete real user data.
+
+Where practical, use a separate IndexedDB database or explicit mode-specific repository namespace so demo writes cannot affect real application storage.
+
+## 13.3 Two-phone demonstration
+
+Support the intended local laptop-hosted presentation:
+
+- Laptop runs Shram Setu.
+- Contractor phone accesses the website.
+- Worker phone accesses the website.
+- Both use separate accounts when connected mode is available.
+- The contractor scans a reusable printed QR pass.
+- The worker receives a request in their account.
+- The worker approves or rejects.
+- The contractor sees the actual status update.
+- The ledger and audit history reflect the recorded event.
+
+If Supabase is configured, verify that this happens across real devices.
+
+If it is unavailable, label the approval flow as simulated and do not claim that it works across devices.
+
+Document any LAN, HTTPS, camera permission or internet requirements.
+
+---
+
+# STAGE 14 — BACKUPS, EXPORT AND DATABASE PORTABILITY
+
+Restore or expose appropriate backup/export functionality if missing.
+
+Provide a versioned JSON export/import format for authorized data.
+
+Include the supported entities and relationships, relevant audit metadata and schema version.
+
+Exclude passwords, sessions, privileged keys and unnecessary personal information.
+
+Validate imported data, references, duplicate IDs, wage arithmetic and integrity information.
+
+Do not trust hash values merely because they are present in an imported file.
+
+Preserve legacy records during migration from localStorage to IndexedDB.
+
+Prepare the repository design to support a future SQLite or other local SQL adapter without rewriting the UI.
+
+Do not implement an extra SQL database just for demonstration. Make the schema and adapter boundary portable first.
+
+Document the actual backup and restore behaviour and its limitations.
+
+---
+
+# STAGE 15 — COMPREHENSIVE TESTING
+
+Use the existing test framework where possible. Do not introduce a new dependency unnecessarily.
+
+Run and report actual outcomes for:
+
+## Wage and payment tests
+
+- ₹650 × 4 days = ₹2,600.
+- ₹1,300 recorded payment leaves ₹1,300 outstanding.
+- Worker acknowledgment remains distinct from contractor payment recording.
+- Duplicate payment IDs are rejected or deduplicated.
+- Corrections update the current calculation without erasing original history.
+- Invalid rates, amounts and durations are rejected or handled according to defined rules.
+- Dashboard totals match the underlying records.
+
+## Privacy and QR tests
+
+- QR generation produces a standards-compliant, real QR.
+- Physical devices can scan the QR.
+- No private wage or Aadhaar information is encoded in the payload.
+- Invalid and revoked references fail safely.
+- QR scanning alone does not grant access to private records.
+- Camera limitations and manual fallback behave as documented.
+
+## Authentication and authorization tests
+
+- Workers cannot access another worker's private records.
+- Contractors cannot access unauthorized records.
+- Client-side role manipulation does not grant privileges.
+- RLS policies enforce required access restrictions.
+- Approval requests can be answered only by the intended authenticated worker.
+- Duplicate and unauthorized approval attempts fail.
+
+## Audit and anomaly tests
+
+- Clean baseline passes integrity verification.
+- Tampered content produces the appropriate failure.
+- Broken predecessor linkage is detected.
+- Invalid digest format fails safely.
+- All implemented anomaly rules produce their correct outcomes.
+- Legitimate multi-day work does not trigger an incorrect continuous-shift alert.
+- Baseline restoration returns the demo to a reproducible valid state.
+
+## Storage and synchronization tests
+
+- IndexedDB persists supported records across reload.
+- Initialization does not duplicate the seed dataset.
+- Migration preserves existing valid data.
+- Reset isolates demo data.
+- Export and restore preserve valid relationships.
+- Failed writes do not silently lose records.
+- Repeated synchronization does not duplicate operations.
+- Conflicts are preserved for review.
+
+## Mobile and regression tests
+
+- The site does not have accidental horizontal overflow.
+- Forms, modal dialogs and navigation remain usable on small screens.
+- Existing desktop layout remains functional.
+- Existing translations and core navigation continue to work.
+- No unrelated components were unintentionally removed.
+
+Run compilation, type-checking, lint, automated tests and production build.
+
+Where interactive device behaviour cannot be tested in the available environment, record a precise manual verification procedure.
+
+Do not claim that an unexecuted test passed.
+
+---
+
+# STAGE 16 — IMPLEMENTATION ORDER AND FINAL REPORT
+
+Implement the repairs in this order:
+
+1. Preserve the project and current data.
+2. Fix wage calculations, payment integrity and destructive reset behaviour.
+3. Remove QR data leaks and replace the fake QR.
+4. Restore the central data model and business logic.
+5. Implement genuine IndexedDB storage with safe migration.
+6. Restore audit verification, anomaly detection and dispute preservation.
+7. Repair mobile layout and navigation regressions.
+8. Restore Supabase integration and real account separation where credentials are available.
+9. Implement the worker approval workflow and contact-based trust checks.
+10. Add synchronization and PWA support.
+11. Finalize demo isolation, backups and the judge demonstration.
+12. Execute regression tests and report actual results.
+
+Do not implement all changes as one indiscriminate file rewrite. Keep the code changes coherent, verify each group and fix regressions before continuing.
+
+If a missing Supabase credential or unavailable service blocks a task, complete the independent local work and document the precise blocker. Do not create fake connection results.
+
+### Final report requirements
+
+Provide:
+
+- Major defects repaired.
+- Architecture restored.
+- Files materially changed.
+- Actual build, type-check, lint and test results.
+- Wage arithmetic results.
+- QR scanning and privacy test outcomes.
+- Audit verification outcomes.
+- IndexedDB migration and persistence results.
+- Mobile responsive test results.
+- Supabase connectivity and authentication status.
+- Cross-device approval status.
+- Current limitations and unverified claims.
+- Remaining manual steps.
+- Whether the project is ready for the next development milestone.
+
+Keep the final report concise, factual and honest.
+
+## FINAL ARCHITECTURAL PRINCIPLE
+
+The website must maintain one coherent domain model, one wage calculation engine, one consistent audit protocol and a strict separation between real accounts and Judge Demo.
+
+The long-term architecture should support authenticated shared data through Supabase, IndexedDB-based offline work, genuine QR identification, authorized cross-device worker approval and a portable repository design.
+
+The immediate priority is to restore correct behaviour and prove it with tests. The project must never claim a capability merely because the interface displays it.

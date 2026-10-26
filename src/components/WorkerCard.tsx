@@ -34,9 +34,12 @@ interface WorkerCardProps {
   site?: ConstructionSite;
   stats: {
     totalDaysWorked: number;
-    totalEarned: number;
-    totalAdvancesTaken: number;
-    netBalanceDue: number;
+    totalEarned?: number;
+    grossWagesEarned?: number;
+    totalAdvancesTaken?: number;
+    paymentsRecorded?: number;
+    netBalanceDue?: number;
+    outstandingBalance?: number;
   };
   lang: Language;
 }
@@ -53,6 +56,11 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
   const [copiedRecord, setCopiedRecord] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const [printError, setPrintError] = useState<string | null>(null);
+
+  // Derive normalized stat metrics
+  const displayEarned = stats.grossWagesEarned ?? stats.totalEarned ?? 0;
+  const displayAdvances = stats.paymentsRecorded ?? stats.totalAdvancesTaken ?? 0;
+  const displayBalanceDue = stats.outstandingBalance ?? stats.netBalanceDue ?? 0;
 
   // Preload worker photo asset so it is hot in browser cache before print is triggered
   useEffect(() => {
@@ -73,20 +81,10 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
     };
   }, []);
 
-  // Cryptographic payload encoded in the QR code (keeps standard machine-readable IDs)
-  const qrPayload = JSON.stringify({
-    sys: 'SHRAM_SETU_2.0',
-    id: worker.id,
-    uan: worker.eShramUAN,
-    bocw: worker.bocwRegistrationNo,
-    name: worker.name,
-    trade: getLocalizedTrade(worker.trade, 'en'),
-    wage: worker.dailyBaseWage,
-    verifiedDays: stats.totalDaysWorked,
-    balanceDue: stats.netBalanceDue,
-    site: site?.name || worker.activeSiteId,
-    hash: `SHA256:SS20-${worker.id.replace(/-/g, '')}-${worker.aadhaarLast4}`,
-  });
+  // Standards-compliant opaque reference URL (Zero PII, no wages, no Aadhaar leaked in QR)
+  const qrPayload = typeof window !== 'undefined' && window.location.origin
+    ? `${window.location.origin}/#verify-${worker.id}`
+    : `https://shramsetu.in/#verify-${worker.id}`;
 
   const localizedTrade = getLocalizedTrade(worker.trade, lang);
   const skillInfo = getLocalizedSkill(worker.skillLevel, lang);
@@ -459,7 +457,7 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
                 {t('statsGrossEarned', lang)}
               </span>
               <span className="text-xl sm:text-2xl font-bold font-mono text-slate-900 tabular-nums block">
-                {formatCurrency(stats.totalEarned)}
+                {formatCurrency(displayEarned)}
               </span>
               <span className="text-[10px] text-slate-500 block font-medium mt-0.5 truncate">
                 {t('statsGrossSubtitle', lang)}
@@ -471,7 +469,7 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
                 {t('statsAdvances', lang)}
               </span>
               <span className="text-xl sm:text-2xl font-bold font-mono text-amber-700 tabular-nums block">
-                {formatCurrency(stats.totalAdvancesTaken)}
+                {formatCurrency(displayAdvances)}
               </span>
               <span className="text-[10px] text-amber-600 block font-medium mt-0.5 truncate">
                 {t('statsAdvancesSubtitle', lang)}
@@ -483,7 +481,7 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
                 {t('statsNetDue', lang)}
               </span>
               <span className="text-xl sm:text-2xl font-bold font-mono text-orange-700 tabular-nums block">
-                {formatCurrency(stats.netBalanceDue)}
+                {formatCurrency(displayBalanceDue)}
               </span>
               <span className="text-[10px] text-orange-600 block font-medium mt-0.5 truncate">
                 {t('statsNetDueSubtitle', lang)}
@@ -559,7 +557,7 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
               <div><strong className="text-slate-800 font-sans">{t('qrModalWorker', lang)}</strong> {lang === 'hi' ? worker.hindiName : worker.name}</div>
               <div><strong className="text-slate-800 font-sans">{t('qrModalUan', lang)}</strong> {worker.eShramUAN}</div>
               <div><strong className="text-slate-800 font-sans">{t('qrModalVerifiedDays', lang)}</strong> {stats.totalDaysWorked}</div>
-              <div><strong className="text-slate-800 font-sans">{t('qrModalWageDue', lang)}</strong> {formatCurrency(stats.netBalanceDue)}</div>
+              <div><strong className="text-slate-800 font-sans">{t('qrModalWageDue', lang)}</strong> {formatCurrency(displayBalanceDue)}</div>
               <div className="truncate"><strong className="text-slate-800 font-sans">{t('qrModalHash', lang)}</strong> {qrPayload.slice(0, 36)}...</div>
             </div>
 
@@ -820,15 +818,15 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
                   </div>
                   <div className="bg-white p-2 rounded border border-slate-200">
                     <span className="text-[9px] text-slate-500 block">{t('statsGrossEarned', lang)}</span>
-                    <span className="font-bold font-mono text-slate-900">{formatCurrency(stats.totalEarned)}</span>
+                    <span className="font-bold font-mono text-slate-900">{formatCurrency(displayEarned)}</span>
                   </div>
                   <div className="bg-white p-2 rounded border border-slate-200">
                     <span className="text-[9px] text-slate-500 block">{t('statsAdvances', lang)}</span>
-                    <span className="font-bold font-mono text-amber-700">{formatCurrency(stats.totalAdvancesTaken)}</span>
+                    <span className="font-bold font-mono text-amber-700">{formatCurrency(displayAdvances)}</span>
                   </div>
                   <div className="bg-orange-50 p-2 rounded border border-orange-200">
                     <span className="text-[9px] text-orange-800 font-bold block">{t('statsNetDue', lang)}</span>
-                    <span className="font-bold font-mono text-orange-700">{formatCurrency(stats.netBalanceDue)}</span>
+                    <span className="font-bold font-mono text-orange-700">{formatCurrency(displayBalanceDue)}</span>
                   </div>
                 </div>
               </div>
@@ -1090,19 +1088,19 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
 
               <div className="bg-white p-2.5 rounded-lg border border-slate-200">
                 <span className="text-[10px] text-slate-500 block">{t('statsGrossEarned', lang)}</span>
-                <span className="text-base font-bold font-mono text-slate-900">{formatCurrency(stats.totalEarned)}</span>
+                <span className="text-base font-bold font-mono text-slate-900">{formatCurrency(displayEarned)}</span>
                 <span className="text-[9px] text-slate-500 block">Base Statutory Rate</span>
               </div>
 
               <div className="bg-white p-2.5 rounded-lg border border-slate-200">
                 <span className="text-[10px] text-slate-500 block">{t('statsAdvances', lang)}</span>
-                <span className="text-base font-bold font-mono text-amber-700">{formatCurrency(stats.totalAdvancesTaken)}</span>
+                <span className="text-base font-bold font-mono text-amber-700">{formatCurrency(displayAdvances)}</span>
                 <span className="text-[9px] text-amber-600 block">Ration / Advances</span>
               </div>
 
               <div className="bg-orange-50 p-2.5 rounded-lg border border-orange-200">
                 <span className="text-[10px] text-orange-800 font-bold block">{t('statsNetDue', lang)}</span>
-                <span className="text-base font-bold font-mono text-orange-700">{formatCurrency(stats.netBalanceDue)}</span>
+                <span className="text-base font-bold font-mono text-orange-700">{formatCurrency(displayBalanceDue)}</span>
                 <span className="text-[9px] text-orange-700 block font-medium">Current Payable</span>
               </div>
             </div>

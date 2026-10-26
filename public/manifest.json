@@ -1,0 +1,18 @@
+{
+  "name": "Shram Setu 2.0",
+  "short_name": "ShramSetu",
+  "description": "Verified Digital Work & Wage Records platform empowering informal and construction workers with transparent wage protection.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#ea580c",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/images/shram_setu_hero_pass_1792385013356.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -15,6 +15,8 @@ import {
 import { Worker, ConstructionSite, AttendanceRecord, ShiftType } from '../types';
 import { Language, t, formatCurrency } from '../services/i18n';
 import { speech } from '../services/speech';
+import { calculateShiftWage } from '../services/wageEngine';
+import { computeSha256Hex, canonicalSerialize } from '../services/cryptoAudit';
 
 interface AttendanceMusterProps {
   worker: Worker;
@@ -42,71 +44,68 @@ export const AttendanceMuster: React.FC<AttendanceMusterProps> = ({
 
   const selectedSite = sites.find((s) => s.id === selectedSiteId) || sites[0];
 
-  // Calculate wage preview based on shift type
-  const calculateWage = (type: ShiftType, baseDailyWage: number) => {
-    switch (type) {
-      case 'half_day':
-        return Math.round(baseDailyWage * 0.5);
-      case 'overtime_2h':
-        return Math.round(baseDailyWage + (baseDailyWage / 8) * 2);
-      case 'overtime_4h':
-        return Math.round(baseDailyWage + (baseDailyWage / 8) * 4);
-      case 'full_day':
-      default:
-        return baseDailyWage;
-    }
-  };
+  const shiftCalc = calculateShiftWage(worker.dailyBaseWage, shiftType);
+  const currentPreviewWage = shiftCalc.totalWageInr;
 
-  const currentPreviewWage = calculateWage(shiftType, worker.dailyBaseWage);
-
-  const handlePunchAttendance = () => {
+  const handlePunchAttendance = async () => {
     setIsSimulatingScan(true);
 
-    setTimeout(() => {
-      const now = new Date();
-      const timeStr = now.toTimeString().split(' ')[0];
-      const dateStr = now.toISOString().split('T')[0];
+    const now = new Date();
+    const timeStr = now.toTimeString().split(' ')[0];
+    const dateStr = now.toISOString().split('T')[0];
 
-      let baseHours = 8;
-      let overtimeHours = 0;
-      let status: 'present' | 'half_day' | 'overtime' = 'present';
+    let baseHours = 8;
+    let overtimeHours = 0;
+    let status: 'present' | 'half_day' | 'overtime' = 'present';
 
-      if (shiftType === 'half_day') {
-        baseHours = 4;
-        status = 'half_day';
-      } else if (shiftType === 'overtime_2h') {
-        overtimeHours = 2;
-        status = 'overtime';
-      } else if (shiftType === 'overtime_4h') {
-        overtimeHours = 4;
-        status = 'overtime';
-      }
+    if (shiftType === 'half_day') {
+      baseHours = 4;
+      status = 'half_day';
+    } else if (shiftType === 'overtime_2h') {
+      overtimeHours = 2;
+      status = 'overtime';
+    } else if (shiftType === 'overtime_4h') {
+      overtimeHours = 4;
+      status = 'overtime';
+    }
 
-      const randomHashPart = Math.random().toString(36).substring(2, 10);
-      const newRecord: AttendanceRecord = {
-        id: `ATT-${dateStr}-${Date.now().toString().slice(-4)}`,
-        workerId: worker.id,
-        workerName: worker.name,
-        siteId: selectedSite.id,
-        siteName: selectedSite.name,
-        date: dateStr,
-        timeIn: timeStr,
-        timeOut: '17:30:00',
-        shiftType,
-        baseHours,
-        overtimeHours,
-        calculatedWage: currentPreviewWage,
-        status,
-        supervisorName: 'Anil Sisodiya (JE)',
-        verificationHash: `SHA256:${randomHashPart}e9102b`,
-        geoVerified: true,
-        notes: notes.trim() || undefined,
-      };
+    const payloadObj = {
+      workerId: worker.id,
+      siteId: selectedSite.id,
+      date: dateStr,
+      timeIn: timeStr,
+      shiftType,
+      baseHours,
+      overtimeHours,
+      calculatedWage: currentPreviewWage,
+    };
 
-      onMarkAttendance(newRecord);
-      setIsSimulatingScan(false);
-      setScanSuccess(true);
-      setNotes('');
+    const genuineSha256 = await computeSha256Hex(canonicalSerialize(payloadObj));
+
+    const newRecord: AttendanceRecord = {
+      id: `ATT-${dateStr}-${Date.now().toString().slice(-4)}`,
+      workerId: worker.id,
+      workerName: worker.name,
+      siteId: selectedSite.id,
+      siteName: selectedSite.name,
+      date: dateStr,
+      timeIn: timeStr,
+      timeOut: '17:30:00',
+      shiftType,
+      baseHours,
+      overtimeHours,
+      calculatedWage: currentPreviewWage,
+      status,
+      supervisorName: 'Anil Sisodiya (JE)',
+      verificationHash: genuineSha256,
+      geoVerified: true,
+      notes: notes.trim() || undefined,
+    };
+
+    onMarkAttendance(newRecord);
+    setIsSimulatingScan(false);
+    setScanSuccess(true);
+    setNotes('');
 
       // Voice notification
       if (lang === 'hi') {
@@ -126,7 +125,6 @@ export const AttendanceMuster: React.FC<AttendanceMusterProps> = ({
       setTimeout(() => {
         setScanSuccess(false);
       }, 4000);
-    }, 700);
   };
 
   const handleSpeakHistory = () => {
