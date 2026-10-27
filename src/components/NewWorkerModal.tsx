@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { UserPlus, Check } from 'lucide-react';
 import { Worker, SkillLevel, ConstructionSite } from '../types';
 import { Language, t } from '../services/i18n';
+import { useModalBehavior } from '../hooks/useModalBehavior';
 import { speech } from '../services/speech';
 
 interface NewWorkerModalProps {
@@ -31,6 +32,8 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
   const [emergencyName, setEmergencyName] = useState('');
   const [emergencyPhone, setEmergencyPhone] = useState('');
   const [siteId, setSiteId] = useState(sites[0]?.id || 'SITE-IND-METRO-01');
+
+  const modalRef = useModalBehavior(isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -102,19 +105,29 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 my-8">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink-950/60 p-4 backdrop-blur-sm animate-fade-up"
+      onClick={onClose}
+    >
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('workerModalTitle', lang)}
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
+        className="my-8 w-full max-w-lg space-y-4 rounded-[1.5rem] border border-sand-200 bg-white p-6 shadow-[0_40px_80px_-40px_rgba(8,19,15,0.6)] outline-none">
         
-        <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+        <div className="flex items-center justify-between pb-3 border-b border-sand-200">
           <div className="flex items-center gap-2">
-            <UserPlus className="w-5 h-5 text-orange-600" />
-            <h3 className="text-base font-bold text-slate-900">
+            <UserPlus className="w-5 h-5 text-brass-600" />
+            <h3 className="text-base font-bold text-ink-900">
               {t('workerModalTitle', lang)}
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 font-bold text-base cursor-pointer"
+            className="text-ink-400 hover:text-ink-600 font-bold text-base cursor-pointer"
             aria-label="Close"
           >
             ✕
@@ -125,7 +138,7 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
           
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('workerModalFullNameEn', lang)}
               </label>
               <input
@@ -134,12 +147,12 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Radheshyam Sharma"
-                className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
+                className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-900 focus:outline-none focus:ring-1 focus:ring-brass-500 font-medium"
               />
             </div>
 
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('workerModalFullNameHi', lang)}
               </label>
               <input
@@ -147,32 +160,32 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
                 value={hindiName}
                 onChange={(e) => setHindiName(e.target.value)}
                 placeholder="उदा. राधेश्याम शर्मा"
-                className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
+                className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-900 focus:outline-none focus:ring-1 focus:ring-brass-500 font-medium"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('workerModalMobile', lang)}
               </label>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full font-mono bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full font-mono bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-900 focus:outline-none focus:ring-1 focus:ring-brass-500"
               />
             </div>
 
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('workerModalBloodGroup', lang)}
               </label>
               <select
                 value={bloodGroup}
                 onChange={(e) => setBloodGroup(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 font-medium"
+                className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-900 font-medium"
               >
                 <option value="B+">B+</option>
                 <option value="O+">O+</option>
@@ -185,7 +198,7 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">
+            <label className="font-semibold text-ink-700 block mb-1">
               {t('workerModalTrade', lang)}
             </label>
             <input
@@ -194,19 +207,19 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
               value={trade}
               onChange={(e) => setTrade(e.target.value)}
               placeholder="e.g. Mason, Helper, Carpenter, Electrician"
-              className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-900 focus:outline-none focus:ring-1 focus:ring-brass-500"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('workerModalSkillLevel', lang)}
               </label>
               <select
                 value={skillLevel}
                 onChange={(e) => handleSkillChange(e.target.value as SkillLevel)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 font-medium"
+                className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-900 font-medium"
               >
                 <option value="unskilled">{lang === 'hi' ? 'अकुशल (₹412/दिन)' : 'Unskilled (₹412/day)'}</option>
                 <option value="semi_skilled">{lang === 'hi' ? 'अर्ध-कुशल (₹465/दिन)' : 'Semi-Skilled (₹465/day)'}</option>
@@ -216,7 +229,7 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
             </div>
 
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('workerModalBaseWage', lang)}
               </label>
               <input
@@ -225,14 +238,14 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
                 min="400"
                 value={dailyBaseWage}
                 onChange={(e) => setDailyBaseWage(Number(e.target.value))}
-                className="w-full font-mono font-bold text-emerald-700 bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full font-mono font-bold text-forest-700 bg-sand-50 border border-ink-300 rounded-lg p-2.5 focus:outline-none focus:ring-1 focus:ring-brass-500"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('workerModalUan', lang)}
               </label>
               <input
@@ -240,12 +253,12 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
                 value={eShramUAN}
                 onChange={(e) => setEShramUAN(e.target.value)}
                 placeholder="1009 8472 9102"
-                className="w-full font-mono bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full font-mono bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-900 focus:outline-none focus:ring-1 focus:ring-brass-500"
               />
             </div>
 
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('workerModalAadhaar', lang)}
               </label>
               <input
@@ -254,14 +267,14 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
                 value={aadhaarLast4}
                 onChange={(e) => setAadhaarLast4(e.target.value)}
                 placeholder="4921"
-                className="w-full font-mono bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full font-mono bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-900 focus:outline-none focus:ring-1 focus:ring-brass-500"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('workerModalEmergencyName', lang)}
               </label>
               <input
@@ -269,12 +282,12 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
                 value={emergencyName}
                 onChange={(e) => setEmergencyName(e.target.value)}
                 placeholder="e.g. Suman Devi"
-                className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-900 focus:outline-none focus:ring-1 focus:ring-brass-500"
               />
             </div>
 
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('workerModalEmergencyPhone', lang)}
               </label>
               <input
@@ -282,19 +295,19 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
                 value={emergencyPhone}
                 onChange={(e) => setEmergencyPhone(e.target.value)}
                 placeholder="+91 97531 XXXXX"
-                className="w-full font-mono bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full font-mono bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-900 focus:outline-none focus:ring-1 focus:ring-brass-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">
+            <label className="font-semibold text-ink-700 block mb-1">
               {t('workerModalDeploySite', lang)}
             </label>
             <select
               value={siteId}
               onChange={(e) => setSiteId(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-900 font-medium"
+              className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-900 font-medium"
             >
               {sites.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -308,13 +321,13 @@ export const NewWorkerModal: React.FC<NewWorkerModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg transition-colors cursor-pointer"
+              className="flex-1 py-2.5 bg-sand-100 hover:bg-sand-200 text-ink-700 font-semibold rounded-lg transition-colors cursor-pointer"
             >
               {t('workerModalCancel', lang)}
             </button>
             <button
               type="submit"
-              className="flex-1 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-lg shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 bg-brass-600 hover:bg-brass-500 text-white font-semibold rounded-lg shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"
             >
               <Check className="w-4 h-4" />
               <span>{t('workerModalSubmit', lang)}</span>

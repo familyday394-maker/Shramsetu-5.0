@@ -4,7 +4,7 @@
  * Confidential user API responses and private records are never cached indiscriminately.
  */
 
-const CACHE_NAME = 'shram-setu-shell-v2';
+const CACHE_NAME = 'shram-setu-shell-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

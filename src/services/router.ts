@@ -13,6 +13,8 @@ export type AppRoute =
   | 'privacy'
   | 'help'
   | 'about'
+  | 'verify'
+  | 'not-found'
   | 'worker'
   | 'contractor'
   | 'judge-demo';
@@ -75,6 +77,10 @@ class Router {
       case 'about-project':
       case 'bal-vigyan':
         return { route: 'about', params };
+      case 'verify':
+      case 'verify-pass':
+      case 'pass':
+        return { route: 'verify', params };
       case 'worker':
       case 'worker-portal':
         return { route: 'worker', params };
@@ -87,8 +93,11 @@ class Router {
         return { route: 'judge-demo', params };
       case 'home':
       case '':
-      default:
         return { route: 'home', params };
+      default:
+        // Unknown deep links should explain themselves rather than silently
+        // pretending the visitor landed on the home page.
+        return { route: 'not-found', params };
     }
   }
 

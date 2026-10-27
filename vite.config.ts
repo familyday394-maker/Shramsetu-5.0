@@ -11,6 +11,12 @@ export default defineConfig(() => {
         '@': path.resolve(import.meta.dirname || '.', '.'),
       },
     },
+    preview: {
+      host: '0.0.0.0',
+      port: 8080,
+      strictPort: true,
+      allowedHosts: true as const,
+    },
     server: {
       host: '0.0.0.0',
       port: 3000,
