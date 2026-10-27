@@ -231,7 +231,11 @@ class AuthService {
       this.clearRememberedLoginId();
     }
 
-    // Try Supabase Auth if configured and email is used
+    // Try Supabase Auth when configured and an email address is used. A remote
+    // failure must NOT block local accounts — the registry is the offline-first
+    // source of truth — so the error is held back until the local lookup fails.
+    let remoteUser: any = null;
+    let remoteError: string | null = null;
     if (this.supabase && cleanInput.includes('@') && params.password) {
       try {
         const { data, error } = await this.supabase.auth.signInWithPassword({
@@ -239,7 +243,9 @@ class AuthService {
           password: params.password,
         });
         if (error) {
-          return { success: false, error: error.message };
+          remoteError = error.message;
+        } else {
+          remoteUser = data?.user ?? null;
         }
       } catch (err: any) {
         console.warn('[Auth] Remote Supabase sign in fallback to local registry:', err);
@@ -250,7 +256,7 @@ class AuthService {
     const registry = this.getLocalUsers();
     const cleanPhoneDigits = cleanInput.replace(/\D/g, '');
 
-    const found = registry.find((u) => {
+    let found = registry.find((u) => {
       const userPhoneDigits = u.phone.replace(/\D/g, '');
       const matchPhone = cleanPhoneDigits.length >= 10 && userPhoneDigits.includes(cleanPhoneDigits);
       const matchEmail = u.email && u.email.toLowerCase() === cleanInput.toLowerCase();
@@ -258,10 +264,35 @@ class AuthService {
       return matchPhone || matchEmail || matchId;
     });
 
+    // Authenticated in Supabase but unknown locally (e.g. signed up on another
+    // device): rebuild the local profile from the Supabase metadata.
+    if (!found && remoteUser) {
+      const meta = (remoteUser.user_metadata || {}) as Record<string, string>;
+      found = {
+        id: remoteUser.id,
+        email: remoteUser.email || cleanInput,
+        phone: meta.phone || '',
+        fullName: meta.full_name || remoteUser.email?.split('@')[0] || 'Registered user',
+        role: meta.role === 'contractor' ? 'contractor' : 'worker',
+        trade: meta.trade || undefined,
+        organizationName: meta.organization_name || undefined,
+        contactVerificationStatus: 'number_supplied',
+        manualChecks: [],
+        consentToShareContact: true,
+        privacyAccepted: true,
+        qrReferenceToken: this.generateOpaqueToken(meta.role === 'contractor' ? 'CTR' : 'WKR'),
+        createdAt: new Date().toISOString(),
+        isJudgeDemo: false,
+      };
+      this.saveLocalUser(found, '');
+    }
+
     if (!found) {
-      return { 
-        success: false, 
-        error: 'No registered account found with these details. Please create an account or verify your mobile number.' 
+      return {
+        success: false,
+        error:
+          remoteError ||
+          'No registered account found with these details. Please create an account or verify your mobile number.',
       };
     }
 

@@ -11,12 +11,22 @@ export const LANGUAGE_STORAGE_KEY = 'shramsetu_preferred_lang';
 
 export function getSavedLanguage(): Language {
   if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    if (saved === 'en' || saved === 'hi') {
-      return saved;
+    try {
+      const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+      if (saved === 'en' || saved === 'hi') {
+        return saved;
+      }
+    } catch {
+      // Storage can be unavailable in private browsing — fall through.
+    }
+
+    // No explicit choice yet: honour a Hindi browser locale, otherwise English.
+    const browserLang = navigator.language || navigator.languages?.[0] || 'en';
+    if (browserLang.toLowerCase().startsWith('hi')) {
+      return 'hi';
     }
   }
-  return 'hi'; // Default to Hindi for informal worker accessibility
+  return 'en';
 }
 
 export function saveLanguage(lang: Language): void {
@@ -801,4 +811,12 @@ export function getLocalizedSkill(skillLevel: string, lang: Language): { label: 
         color: 'bg-amber-50 text-amber-800 border-amber-300',
       };
   }
+}
+
+/**
+ * Inline bilingual helper for interface chrome that is authored directly in a
+ * component (short labels, tab names, helper lines).
+ */
+export function bi(lang: Language, en: string, hi: string): string {
+  return lang === 'hi' ? hi : en;
 }

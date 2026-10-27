@@ -671,6 +671,19 @@ class ShramSetuDB {
 
   public addAttendance(record: AttendanceRecord): void {
     this.initSync();
+
+    // One approved shift per worker per calendar day. Re-marking the same date
+    // replaces the previous entry (and its auto-generated wage credit) so a
+    // duplicate punch can never double-credit the ledger.
+    const duplicate = this.attendance.find(
+      (att) => att.workerId === record.workerId && att.date === record.date
+    );
+    if (duplicate) {
+      this.attendance = this.attendance.filter((att) => att.id !== duplicate.id);
+      this.ledger = this.ledger.filter((entry) => entry.id !== `LDG-ATT-${duplicate.id}`);
+      idb.delete('work_records', duplicate.id).catch(() => {});
+    }
+
     this.attendance.unshift(record);
     this.persist('attendance', this.attendance);
     idb.put('work_records', record).catch(() => {});

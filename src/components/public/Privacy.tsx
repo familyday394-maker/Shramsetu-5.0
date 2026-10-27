@@ -1,103 +1,245 @@
 import React from 'react';
-import { ShieldCheck, Lock, EyeOff, UserCheck, Scale, FileText } from 'lucide-react';
+import {
+  ShieldCheck,
+  Lock,
+  EyeOff,
+  UserCheck,
+  Scale,
+  FileText,
+  CheckCircle2,
+  XCircle,
+  Database,
+  Trash2,
+} from 'lucide-react';
 import { AppRoute } from '../../services/router';
 import { Language } from '../../services/i18n';
+import { PageHeader } from '../ui/PageHeader';
+import { Reveal } from '../ui/Reveal';
+import { LanguageNotice } from '../ui/LanguageNotice';
 
 interface PrivacyProps {
   onNavigate: (route: AppRoute) => void;
   lang: Language;
 }
 
+const NEVER = [
+  'Aadhaar or national biometric identifiers',
+  'Mobile phone numbers or residential addresses',
+  'Bank account numbers, IFSC codes or UPI IDs',
+  'Accumulated wage balances or transaction amounts',
+  'Personal attendance logs or dispute filings',
+];
+
+const SECTIONS = [
+  {
+    id: 'qr',
+    icon: Lock,
+    title: 'Zero-PII QR standard',
+    body: (
+      <>
+        <p>
+          Shram Setu guarantees that no personally identifiable information is encoded directly into
+          a worker QR pass. The code encodes exclusively an opaque, unguessable token that resolves to
+          a record on the host network.
+        </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-xl border border-forest-200 bg-forest-50/60 p-4">
+            <p className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-forest-800">
+              <CheckCircle2 className="h-3.5 w-3.5" /> Encoded
+            </p>
+            <ul className="mt-2 space-y-1.5 text-[11.5px] text-forest-900/80">
+              <li>Opaque reference token</li>
+              <li>Issue date</li>
+              <li>Integrity checksum</li>
+            </ul>
+          </div>
+          <div className="rounded-xl border border-rose-200 bg-rose-50/60 p-4">
+            <p className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-rose-800">
+              <XCircle className="h-3.5 w-3.5" /> Never encoded
+            </p>
+            <ul className="mt-2 space-y-1.5 text-[11.5px] text-rose-900/80">
+              {NEVER.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </>
+    ),
+  },
+  {
+    id: 'phone',
+    icon: UserCheck,
+    title: 'Mobile number & mutual verification',
+    body: (
+      <>
+        <p>
+          Mobile numbers are collected during registration solely to provide a human cross-check
+          between workers and authorised contractors. They are only shown to counterparts who have
+          mutually joined the same site or shift.
+        </p>
+        <p className="mt-2">
+          Cross-checks record the timestamp, reporting party and outcome — confirmed match, details
+          mismatch or unreachable.
+        </p>
+        <div className="mt-3 rounded-xl border border-brass-200 bg-brass-50/70 p-3.5 text-[11px] leading-relaxed text-brass-900">
+          <strong className="font-bold">Legal clarification:</strong> mutual manual phone checks are
+          human cross-checks between workplace counterparts. They do <strong>not</strong> constitute
+          statutory identity verification, biometric authentication or definitive proof of legal
+          identity.
+        </div>
+      </>
+    ),
+  },
+  {
+    id: 'scoping',
+    icon: Database,
+    title: 'Role-based scoping & isolation',
+    body: (
+      <p>
+        Workers can only access their own work records, wage balances and disputes. Contractors
+        cannot inspect records of workers outside their authorised assignments. Newly created
+        accounts start empty and never inherit demonstration data.
+      </p>
+    ),
+  },
+  {
+    id: 'credentials',
+    icon: EyeOff,
+    title: 'Password & credential security',
+    body: (
+      <p>
+        Passwords are handled by the authentication provider (Supabase Auth when configured) and are
+        never stored in localStorage, sessionStorage or IndexedDB. The optional “Remember my login
+        ID” feature stores only the public identifier, never the password.
+      </p>
+    ),
+  },
+  {
+    id: 'audit',
+    icon: FileText,
+    title: 'Non-repudiable audit log',
+    body: (
+      <p>
+        Critical transitions — muster punches, payouts, acknowledgements and dispute filings — are
+        written into a sequential SHA-256 hash chain. Historical wage records cannot be altered
+        retroactively without immediate detection by an auditor.
+      </p>
+    ),
+  },
+  {
+    id: 'retention',
+    icon: Trash2,
+    title: 'Retention & your controls',
+    body: (
+      <>
+        <p>
+          Records live primarily in your browser (IndexedDB) and are mirrored to the configured cloud
+          backend when one exists. You can export a complete JSON backup at any time from the audit
+          bench, and clearing your browser storage removes the local copy.
+        </p>
+        <p className="mt-2">
+          To request deletion of a cloud copy, contact the helpline with your registered mobile
+          number. Accounts and statutory records may be retained where labour law requires it.
+        </p>
+      </>
+    ),
+  },
+];
+
 export const Privacy: React.FC<PrivacyProps> = ({ onNavigate, lang }) => {
   return (
-    <div className="max-w-4xl mx-auto py-8 sm:py-12 px-4 space-y-8">
-      
-      <div className="text-center max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 mb-2">
-          <ShieldCheck className="w-4 h-4" />
-          <span>Informal Worker Privacy Framework</span>
+    <div className="pb-4">
+      <LanguageNotice lang={lang} />
+
+      <PageHeader
+        eyebrow="Informal worker privacy framework"
+        icon={<ShieldCheck className="h-5 w-5" />}
+        title="Privacy and data use, in plain language"
+        description="Written to be read by the person it protects — not only by a lawyer. Effective for Shram Setu 2.0 · Senior Bal Vigyan Indore Innovation."
+      >
+        <div className="flex flex-wrap gap-2">
+          {[
+            'Zero-PII QR',
+            'No data resale',
+            'Local-first storage',
+            'Export any time',
+          ].map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full border border-forest-200 bg-forest-50 px-3 py-1.5 text-[10.5px] font-bold text-forest-800"
+            >
+              {tag}
+            </span>
+          ))}
         </div>
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-          Privacy and Data Use Policy
-        </h1>
-        <p className="text-xs text-slate-500 mt-1">
-          Effective for Shram Setu 2.0 · Senior Bal Vigyan Indore Innovation
-        </p>
-      </div>
+      </PageHeader>
 
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-8 text-xs sm:text-sm text-slate-700 leading-relaxed">
-        
-        {/* Section 1 */}
-        <section className="space-y-2.5">
-          <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-            <Lock className="w-4 h-4 text-emerald-700" />
-            <h2>1. Zero-PII QR Code Standard</h2>
+      <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[0.32fr_1fr] lg:gap-12">
+        {/* Sticky index */}
+        <nav aria-label="Sections" className="hidden lg:block">
+          <div className="sticky top-28 space-y-1">
+            <p className="mb-3 text-[9.5px] font-bold uppercase tracking-[0.18em] text-ink-400">
+              On this page
+            </p>
+            {SECTIONS.map((section, index) => (
+              <a
+                key={section.id}
+                href={`#privacy-${section.id}`}
+                className="group flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[11.5px] font-semibold text-ink-500 transition-colors hover:bg-white hover:text-forest-800"
+              >
+                <span className="font-mono text-[9.5px] text-ink-300 group-hover:text-brass-600">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                {section.title}
+              </a>
+            ))}
           </div>
-          <p>
-            Shram Setu 2.0 strictly guarantees that no personally identifiable information (PII) is encoded directly into worker QR passes. Specifically, the QR matrix never contains:
-          </p>
-          <ul className="list-disc pl-5 space-y-1 text-slate-600">
-            <li>Aadhaar numbers or national biometric identifiers</li>
-            <li>Mobile phone numbers or residential addresses</li>
-            <li>Bank account numbers, IFSC codes, or UPI payment IDs</li>
-            <li>Accumulated wage ledger balances or transaction amounts</li>
-            <li>Personal attendance logs or historical dispute filings</li>
-          </ul>
-          <p className="text-slate-500 text-xs">
-            The QR code encodes exclusively an opaque, unguessable cryptographic token that resolves to a working application URL on the actual host network.
-          </p>
-        </section>
+        </nav>
 
-        {/* Section 2 */}
-        <section className="space-y-2.5">
-          <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-            <UserCheck className="w-4 h-4 text-emerald-700" />
-            <h2>2. Mobile Number & Mutual Verification Protocol</h2>
-          </div>
-          <p>
-            Mobile numbers are collected during registration solely to provide a human cross-check between workers and authorized contractors.
-          </p>
-          <p>
-            Contact numbers are only displayed to authorized counterparts who have mutually joined a specific site or shift. Contact cross-checks are recorded with timestamps, reporting parties, and outcomes (confirmed match, details mismatch, or unreachable).
-          </p>
-          <div className="bg-amber-50 p-3.5 rounded-xl border border-amber-200 text-amber-900 text-xs">
-            <strong>Mandatory Legal Clarification:</strong> Mutual manual phone checks are human cross-checks between workplace counterparts. They do <strong>not</strong> constitute statutory identity verification, government biometric authentication, or definitive proof of legal identity.
-          </div>
-        </section>
+        <div className="space-y-4">
+          {SECTIONS.map((section, index) => {
+            const Icon = section.icon;
+            return (
+              <Reveal key={section.id} delay={index * 60}>
+                <section
+                  id={`privacy-${section.id}`}
+                  className="scroll-mt-28 rounded-2xl border border-sand-200 bg-white p-6 shadow-soft sm:p-7"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-forest-50 to-sand-100 text-forest-700 ring-1 ring-inset ring-forest-100">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-mono text-[9.5px] font-bold tracking-[0.2em] text-ink-300">
+                        SECTION {String(index + 1).padStart(2, '0')}
+                      </p>
+                      <h2 className="mt-1 text-[15px] leading-snug text-ink-950">{section.title}</h2>
+                    </div>
+                  </div>
+                  <div className="mt-3 text-[12px] leading-relaxed text-ink-500">{section.body}</div>
+                </section>
+              </Reveal>
+            );
+          })}
 
-        {/* Section 3 */}
-        <section className="space-y-2.5">
-          <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-            <Scale className="w-4 h-4 text-emerald-700" />
-            <h2>3. Role-Based Scoping & Data Isolation</h2>
-          </div>
-          <p>
-            Workers only have access to their own work records, wage khata balances, and disputes. Contractors cannot inspect the private records of workers outside of their authorized assignments. Newly created accounts start with a clean state and do not inherit random demonstration records.
-          </p>
-        </section>
-
-        {/* Section 4 */}
-        <section className="space-y-2.5">
-          <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-            <EyeOff className="w-4 h-4 text-emerald-700" />
-            <h2>4. Password & Credential Security</h2>
-          </div>
-          <p>
-            Passwords are handled through the authentication provider (Supabase Auth when configured) and are <strong>never stored in localStorage, sessionStorage, or IndexedDB</strong>. The optional "Remember my login ID" feature stores only the public identifier (email or phone) and never remembers passwords.
-          </p>
-        </section>
-
-        {/* Section 5 */}
-        <section className="space-y-2.5">
-          <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-            <FileText className="w-4 h-4 text-emerald-700" />
-            <h2>5. Non-Repudiable Cryptographic Audit Log</h2>
-          </div>
-          <p>
-            All critical transitions (daily muster punches, contractor payouts, worker acknowledgments, and dispute filings) are recorded in a sequential SHA-256 cryptographic hash chain. This ensures that historical wage records cannot be altered retroactively without immediate detection by labor welfare auditors.
-          </p>
-        </section>
-
+          <Reveal delay={80}>
+            <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-sand-200 bg-sand-100/60 p-6 sm:flex-row sm:items-center">
+              <div className="flex items-start gap-3">
+                <Scale className="mt-0.5 h-5 w-5 shrink-0 text-forest-700" />
+                <div>
+                  <p className="text-[12.5px] font-bold text-ink-900">Questions about your data?</p>
+                  <p className="mt-0.5 text-[11px] text-ink-500">
+                    Ask before you register — nothing is created until you submit the form.
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => onNavigate('help')} className="btn btn-primary btn-sm shrink-0">
+                Contact the team
+              </button>
+            </div>
+          </Reveal>
+        </div>
       </div>
     </div>
   );

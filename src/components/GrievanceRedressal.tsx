@@ -217,16 +217,16 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
     <div className="space-y-6">
       
       {/* Top Banner */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="bg-white p-5 rounded-2xl border border-sand-200 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
               <Scale className="w-5 h-5 text-red-600" />
-              <h2 className="text-lg font-bold text-slate-900">
+              <h2 className="text-lg font-bold text-ink-900">
                 {t('grievanceTitle', lang)}
               </h2>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-ink-500 mt-0.5">
               {t('grievanceSubtitle', lang)}
             </p>
           </div>
@@ -244,13 +244,13 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start min-w-0">
         
         {/* Form to File New Grievance */}
-        <div className="lg:col-span-5 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4 min-w-0">
-          <div className="border-b border-slate-200 pb-3">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+        <div className="lg:col-span-5 bg-white p-4 sm:p-5 rounded-2xl border border-sand-200 shadow-xs space-y-4 min-w-0">
+          <div className="border-b border-sand-200 pb-3">
+            <h3 className="text-sm font-bold text-ink-900 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-red-600" />
               <span>{t('grievanceFormTitle', lang)}</span>
             </h3>
-            <span className="text-[11px] text-slate-500">
+            <span className="text-[11px] text-ink-500">
               {t('grievanceFormSubtitle', lang)}
             </span>
           </div>
@@ -258,7 +258,7 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
           <form onSubmit={handleSubmitDispute} className="space-y-3.5 text-xs">
             
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('grievanceContractorLabel', lang)}
               </label>
               <input
@@ -267,12 +267,12 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
                 value={contractorName}
                 onChange={(e) => setContractorName(e.target.value)}
                 placeholder={t('grievanceContractorPlaceholder', lang)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-800 focus:outline-none focus:ring-1 focus:ring-brass-500"
               />
             </div>
 
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('grievancePhoneLabel', lang)}
               </label>
               <input
@@ -280,31 +280,31 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
                 value={contractorPhone}
                 onChange={(e) => setContractorPhone(e.target.value)}
                 placeholder="+91 94250 XXXXX"
-                className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 font-mono focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-800 font-mono focus:outline-none focus:ring-1 focus:ring-brass-500"
               />
             </div>
 
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('grievanceSiteLabel', lang)}
               </label>
               <input
                 type="text"
                 value={siteName}
                 onChange={(e) => setSiteName(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-800 focus:outline-none focus:ring-1 focus:ring-brass-500"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">
+                <label className="font-semibold text-ink-700 block mb-1">
                   {t('grievanceTypeLabel', lang)}
                 </label>
                 <select
                   value={disputeType}
                   onChange={(e) => setDisputeType(e.target.value as DisputeGrievance['disputeType'])}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2 text-ink-800 focus:outline-none focus:ring-1 focus:ring-brass-500"
                 >
                   <option value="unpaid_wages">{t('grievanceReasonUnpaid', lang)}</option>
                   <option value="arbitrary_deduction">{t('grievanceReasonDeduction', lang)}</option>
@@ -313,7 +313,7 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
               </div>
 
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">
+                <label className="font-semibold text-ink-700 block mb-1">
                   {t('grievanceAmountLabel', lang)}
                 </label>
                 <input
@@ -322,13 +322,13 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
                   required
                   value={claimedAmount}
                   onChange={(e) => setClaimedAmount(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2 font-mono font-bold text-ink-800 focus:outline-none focus:ring-1 focus:ring-brass-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">
+              <label className="font-semibold text-ink-700 block mb-1">
                 {t('grievanceStatementLabel', lang)}
               </label>
               <textarea
@@ -336,7 +336,7 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t('grievanceStatementPlaceholder', lang)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full bg-sand-50 border border-ink-300 rounded-lg p-2.5 text-ink-800 focus:outline-none focus:ring-1 focus:ring-brass-500"
               />
             </div>
 
@@ -354,10 +354,10 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
         {/* Right: Active Cases List + Document Preview + Contractor Rebuttal */}
         <div className="lg:col-span-7 space-y-4 min-w-0">
           
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center justify-between">
+          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-sand-200 shadow-xs space-y-3">
+            <h3 className="text-sm font-bold text-ink-900 flex items-center justify-between">
               <span>{t('grievanceActiveTitle', lang)}</span>
-              <span className="text-xs font-mono text-slate-500">
+              <span className="text-xs font-mono text-ink-500">
                 {grievances.length} {t('grievanceCasesCount', lang)}
               </span>
             </h3>
@@ -375,28 +375,28 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
                     className={`p-3 rounded-xl border text-xs cursor-pointer transition-all flex items-center justify-between min-w-0 ${
                       isSelected
                         ? 'border-red-500 bg-red-50/40 shadow-xs'
-                        : 'border-slate-200 hover:bg-slate-50'
+                        : 'border-ink-200 hover:bg-ink-50'
                     }`}
                   >
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-mono font-bold text-slate-900 truncate">{g.dloFilingRef}</span>
+                        <span className="font-mono font-bold text-ink-900 truncate">{g.dloFilingRef}</span>
                         <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border whitespace-nowrap ${
                           g.status === 'notice_issued'
-                            ? 'bg-amber-50 text-amber-800 border-amber-300'
+                            ? 'bg-brass-50 text-brass-800 border-brass-300'
                             : g.status === 'under_inquiry'
                             ? 'bg-blue-50 text-blue-800 border-blue-300'
-                            : 'bg-slate-100 text-slate-800 border-slate-300'
+                            : 'bg-ink-100 text-ink-800 border-ink-300'
                         }`}>
                           {g.status.replace('_', ' ').toUpperCase()}
                         </span>
                         {g.contractorResponse && (
-                          <span className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-1.5 py-0.5 rounded font-medium">
+                          <span className="text-[10px] bg-forest-50 text-forest-800 border border-forest-200 px-1.5 py-0.5 rounded font-medium">
                             {lang === 'hi' ? 'ठेकेदार का पक्ष दर्ज' : 'Rebuttal On File'}
                           </span>
                         )}
                       </div>
-                      <span className="text-slate-600 block mt-0.5 truncate">
+                      <span className="text-ink-600 block mt-0.5 truncate">
                         {t('grievanceAgainst', lang)} <strong>{g.contractorName}</strong> ({g.siteName})
                       </span>
                     </div>
@@ -405,7 +405,7 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
                       <span className="font-mono font-bold text-red-700 text-sm block">
                         {formatCurrency(g.claimedAmount)}
                       </span>
-                      <span className="text-[10px] text-slate-400 font-mono">
+                      <span className="text-[10px] text-ink-400 font-mono">
                         {g.filingDate}
                       </span>
                     </div>
@@ -417,10 +417,10 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
 
           {/* Formatted Legal Petition Display (DLO Indore Document) */}
           {selectedGrievanceForNotice && (
-            <div className="bg-slate-900 text-slate-100 p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-lg space-y-3 font-mono text-xs min-w-0">
+            <div className="bg-ink-900 text-sand-100 p-4 sm:p-5 rounded-2xl border border-ink-800 shadow-lg space-y-3 font-mono text-xs min-w-0">
               
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
-                <div className="flex items-center gap-2 text-orange-400 font-sans font-bold">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink-800 pb-2">
+                <div className="flex items-center gap-2 text-brass-400 font-sans font-bold">
                   <FileText className="w-4 h-4 shrink-0" />
                   <span>{t('grievanceDocHeader', lang)}</span>
                 </div>
@@ -428,23 +428,23 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
                 <div className="flex flex-wrap items-center gap-2">
                   <button
                     onClick={handleSpeakNotice}
-                    className="p-1 text-slate-400 hover:text-white cursor-pointer"
+                    className="p-1 text-ink-400 hover:text-white cursor-pointer"
                     title={t('listenAudio', lang)}
                   >
-                    <Volume2 className="w-4 h-4 text-orange-400" />
+                    <Volume2 className="w-4 h-4 text-brass-400" />
                   </button>
 
                   <button
                     onClick={handleCopyNotice}
-                    className="flex items-center gap-1 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-sans font-medium transition-colors cursor-pointer"
+                    className="flex items-center gap-1 px-2.5 py-1 bg-ink-800 hover:bg-ink-700 text-sand-200 rounded text-[11px] font-sans font-medium transition-colors cursor-pointer"
                   >
-                    {copiedNotice ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedNotice ? <Check className="w-3.5 h-3.5 text-forest-400" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copiedNotice ? t('grievanceCopiedNotice', lang) : t('grievanceCopyNotice', lang)}</span>
                   </button>
 
                   <button
                     onClick={() => window.print()}
-                    className="flex items-center gap-1 px-2.5 py-1 bg-orange-600 hover:bg-orange-500 text-white rounded text-[11px] font-sans font-medium transition-colors cursor-pointer"
+                    className="flex items-center gap-1 px-2.5 py-1 bg-brass-600 hover:bg-brass-500 text-white rounded text-[11px] font-sans font-medium transition-colors cursor-pointer"
                   >
                     <Printer className="w-3.5 h-3.5" />
                     <span>{t('grievancePrintNotice', lang)}</span>
@@ -452,7 +452,7 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
 
                   <button
                     onClick={() => setShowResponseForm(!showResponseForm)}
-                    className="flex items-center gap-1 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-orange-400 rounded text-[11px] font-sans font-medium transition-colors cursor-pointer"
+                    className="flex items-center gap-1 px-2.5 py-1 bg-ink-800 hover:bg-ink-700 text-brass-400 rounded text-[11px] font-sans font-medium transition-colors cursor-pointer"
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
                     <span>{showResponseForm ? 'Cancel' : (lang === 'hi' ? '+ ठेकेदार का पक्ष जोड़ें' : '+ Add Rebuttal')}</span>
@@ -462,9 +462,9 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
 
               {/* Contractor Rebuttal Form (Preserves Both Sides of Dispute) */}
               {showResponseForm && (
-                <form onSubmit={handleAddContractorResponse} className="bg-slate-800 p-3 rounded-xl border border-slate-700 space-y-2 font-sans">
+                <form onSubmit={handleAddContractorResponse} className="bg-ink-800 p-3 rounded-xl border border-ink-700 space-y-2 font-sans">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-orange-300">
+                    <span className="font-bold text-brass-300">
                       {lang === 'hi' ? 'अनावेदक ठेकेदार का औपचारिक प्रतिउत्तर दर्ज करें:' : "Record Contractor's Official Rebuttal:"}
                     </span>
                   </div>
@@ -474,12 +474,12 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
                     value={contractorRebuttalText}
                     onChange={(e) => setContractorRebuttalText(e.target.value)}
                     placeholder={lang === 'hi' ? 'ठेकेदार का स्पष्टीकरण, भुगतान वाउचर संदर्भ अथवा समझौता विवरण...' : 'Contractor explanation, voucher proof, or settlement statement...'}
-                    className="w-full text-xs bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-orange-500"
+                    className="w-full text-xs bg-ink-900 border border-ink-600 rounded p-2 text-white focus:outline-none focus:border-brass-500"
                   />
                   <div className="text-right">
                     <button
                       type="submit"
-                      className="px-3 py-1 bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold rounded cursor-pointer"
+                      className="px-3 py-1 bg-brass-600 hover:bg-brass-500 text-white text-xs font-semibold rounded cursor-pointer"
                     >
                       {lang === 'hi' ? 'प्रतिउत्तर सुरक्षित करें' : 'Save Rebuttal'}
                     </button>
@@ -488,13 +488,13 @@ Official Support Helpline: ${APP_CONFIG.CONTACT_PHONE}`;
               )}
 
               {/* Scrollable Document Body in clean language */}
-              <pre className="whitespace-pre-wrap font-sans text-slate-300 text-[11px] leading-relaxed max-h-80 overflow-y-auto bg-slate-950 p-4 rounded-xl border border-slate-800 break-words w-full">
+              <pre className="whitespace-pre-wrap font-sans text-ink-300 text-[11px] leading-relaxed max-h-80 overflow-y-auto bg-ink-950 p-4 rounded-xl border border-ink-800 break-words w-full">
                 {generateLegalPetitionText(selectedGrievanceForNotice, lang)}
               </pre>
 
-              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 font-sans">
+              <div className="flex items-center justify-between text-[10px] text-ink-400 pt-1 font-sans">
                 <span>{lang === 'hi' ? 'प्रारूप: जिला श्रम पदाधिकारी इंदौर संभाग' : 'Format: District Labour Officer, Indore Division'}</span>
-                <span className="text-emerald-400 font-bold">{t('grievanceLegalGrounding', lang)}</span>
+                <span className="text-forest-400 font-bold">{t('grievanceLegalGrounding', lang)}</span>
               </div>
 
             </div>

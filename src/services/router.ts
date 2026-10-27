@@ -13,6 +13,7 @@ export type AppRoute =
   | 'privacy'
   | 'help'
   | 'about'
+  | 'verify'
   | 'worker'
   | 'contractor'
   | 'judge-demo';
@@ -75,6 +76,10 @@ class Router {
       case 'about-project':
       case 'bal-vigyan':
         return { route: 'about', params };
+      case 'verify':
+      case 'verify-pass':
+      case 'pass':
+        return { route: 'verify', params };
       case 'worker':
       case 'worker-portal':
         return { route: 'worker', params };

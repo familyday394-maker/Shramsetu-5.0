@@ -1,23 +1,51 @@
-import React, { useState } from 'react';
-import { Users, Building2, ShieldCheck, ArrowRight, CheckCircle2, AlertCircle, Phone, Lock, User, Briefcase, Mail } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import {
+  Users,
+  Building2,
+  ShieldCheck,
+  ArrowRight,
+  CheckCircle2,
+  AlertCircle,
+  Phone,
+  Lock,
+  User,
+  Briefcase,
+  Mail,
+  Eye,
+  EyeOff,
+  Loader2,
+} from 'lucide-react';
 import { auth, SignUpParams } from '../../services/auth';
 import { AppRoute } from '../../services/router';
 import { Language } from '../../services/i18n';
+import { AuthLayout } from './AuthLayout';
 
 interface CreateAccountProps {
   onNavigate: (route: AppRoute) => void;
   lang: Language;
 }
 
-export const CreateAccount: React.FC<CreateAccountProps> = ({ onNavigate, lang }) => {
+const TRADES = [
+  'Head Mason (मुख्य राजमिस्त्री)',
+  'Steel Binder & Rigging Helper (सरिया बाइंडर)',
+  'Site Electrician & Cable Jointer (साइट इलेक्ट्रीशियन)',
+  'General Helper & Concrete Batching (बेलदार)',
+  'Tile Grinding & Surface Polisher (फिनिशिंग)',
+  'Carpenter & Shuttering (शटरिंग बढ़ई)',
+  'Plumber & Pipe Fitter (प्लंबर)',
+  'Painter & Putty Applicator (पेंटर)',
+];
+
+export const CreateAccount: React.FC<CreateAccountProps> = ({ onNavigate }) => {
   const [accountType, setAccountType] = useState<'worker' | 'contractor'>('worker');
-  
+
   // Form fields
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('+91 ');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [trade, setTrade] = useState('Head Mason (मुख्य राजमिस्त्री)');
+  const [showPassword, setShowPassword] = useState(false);
+  const [trade, setTrade] = useState(TRADES[0]);
   const [organizationName, setOrganizationName] = useState('');
   const [consentToShareContact, setConsentToShareContact] = useState(true);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
@@ -25,6 +53,14 @@ export const CreateAccount: React.FC<CreateAccountProps> = ({ onNavigate, lang }
   // Status
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const passwordScore = useMemo(() => {
+    let score = 0;
+    if (password.length >= 6) score += 1;
+    if (password.length >= 10) score += 1;
+    if (/[0-9]/.test(password) && /[a-zA-Z]/.test(password)) score += 1;
+    return score;
+  }, [password]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +73,11 @@ export const CreateAccount: React.FC<CreateAccountProps> = ({ onNavigate, lang }
 
     if (!phone || phone.replace(/\D/g, '').length < 10) {
       setError('Please provide a valid 10-digit mobile number with country code.');
+      return;
+    }
+
+    if (!email.trim() && accountType === 'contractor') {
+      setError('Contractors must provide a work email address for audit correspondence.');
       return;
     }
 
@@ -57,7 +98,7 @@ export const CreateAccount: React.FC<CreateAccountProps> = ({ onNavigate, lang }
       fullName: fullName.trim(),
       phone: phone.trim(),
       email: email.trim() || undefined,
-      password: password,
+      password,
       trade: accountType === 'worker' ? trade : undefined,
       organizationName: accountType === 'contractor' ? organizationName.trim() : undefined,
       consentToShareContact,
@@ -68,277 +109,343 @@ export const CreateAccount: React.FC<CreateAccountProps> = ({ onNavigate, lang }
     setIsLoading(false);
 
     if (res.success && res.user) {
-      if (res.user.role === 'worker') {
-        onNavigate('worker');
-      } else {
-        onNavigate('contractor');
-      }
+      onNavigate(res.user.role === 'worker' ? 'worker' : 'contractor');
     } else {
       setError(res.error || 'Failed to create account. Please verify details.');
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-8 sm:py-12 px-4">
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-md p-6 sm:p-10">
-        
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 mb-3 shadow-xs">
-            <ShieldCheck className="w-6 h-6" />
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-            Create Your Shram Setu Account
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1.5">
-            Select your account type to configure your digital work records
-          </p>
+    <AuthLayout
+      eyebrow="Create account"
+      title="Set up your Shram Setu record"
+      subtitle="One account, a permanent QR pass, and a wage ledger you can show to any authority."
+      icon={<ShieldCheck className="h-5 w-5" />}
+      onNavigate={onNavigate}
+      width="lg"
+      asideTitle="Two minutes now saves a season of arguments later."
+      asidePoints={[
+        'Free for workers — permanently',
+        'No Aadhaar number collected or printed',
+        'Records stored locally first, then synced',
+        'Cancel or export your data at any time',
+      ]}
+    >
+      {error && (
+        <div
+          role="alert"
+          className="mb-5 flex items-start gap-2.5 rounded-xl border border-rose-200 bg-rose-50 p-3.5 text-[11.5px] text-rose-800"
+        >
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+          <span>{error}</span>
         </div>
+      )}
 
-        {/* Account Type Selector (Step 1) */}
-        <div className="mb-8">
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2.5">
-            Select Account Role
-          </label>
-          <div className="grid grid-cols-2 gap-4">
-            
-            <button
-              type="button"
-              onClick={() => setAccountType('worker')}
-              className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
-                accountType === 'worker'
-                  ? 'border-emerald-700 bg-emerald-50/50 text-slate-900 shadow-xs'
-                  : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className={`p-2 rounded-xl ${accountType === 'worker' ? 'bg-emerald-700 text-white' : 'bg-slate-100 text-slate-600'}`}>
-                  <Users className="w-5 h-5" />
-                </div>
-                {accountType === 'worker' && <CheckCircle2 className="w-5 h-5 text-emerald-700" />}
-              </div>
-              <div>
-                <span className="block font-bold text-sm text-slate-900">Worker</span>
-                <span className="text-[11px] text-slate-500">Daily wage, artisan, helper, mason</span>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setAccountType('contractor')}
-              className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
-                accountType === 'contractor'
-                  ? 'border-slate-900 bg-slate-50 text-slate-900 shadow-xs'
-                  : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className={`p-2 rounded-xl ${accountType === 'contractor' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}`}>
-                  <Building2 className="w-5 h-5" />
-                </div>
-                {accountType === 'contractor' && <CheckCircle2 className="w-5 h-5 text-slate-900" />}
-              </div>
-              <div>
-                <span className="block font-bold text-sm text-slate-900">Contractor</span>
-                <span className="text-[11px] text-slate-500">Site builder, engineer, supervisor</span>
-              </div>
-            </button>
-
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Role selector */}
+        <fieldset>
+          <legend className="label">I am registering as</legend>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              {
+                id: 'worker' as const,
+                icon: Users,
+                title: 'Worker',
+                hint: 'Daily wage, artisan, mason, helper',
+              },
+              {
+                id: 'contractor' as const,
+                icon: Building2,
+                title: 'Contractor',
+                hint: 'Builder, site engineer, supervisor',
+              },
+            ].map((option) => {
+              const Icon = option.icon;
+              const active = accountType === option.id;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => setAccountType(option.id)}
+                  aria-pressed={active}
+                  className={`group relative overflow-hidden rounded-2xl border-2 p-3.5 text-left transition-all duration-300 cursor-pointer ${
+                    active
+                      ? option.id === 'worker'
+                        ? 'border-forest-700 bg-forest-50/70 shadow-soft'
+                        : 'border-ink-800 bg-sand-100/70 shadow-soft'
+                      : 'border-sand-200 bg-white hover:border-ink-200 hover:bg-sand-50'
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <span
+                      className={`grid h-9 w-9 place-items-center rounded-xl transition-colors ${
+                        active
+                          ? option.id === 'worker'
+                            ? 'bg-forest-800 text-white'
+                            : 'bg-ink-950 text-white'
+                          : 'bg-sand-100 text-ink-500'
+                      }`}
+                    >
+                      <Icon className="h-4.5 w-4.5" />
+                    </span>
+                    {active && (
+                      <CheckCircle2
+                        className={`h-4.5 w-4.5 ${
+                          option.id === 'worker' ? 'text-forest-700' : 'text-ink-900'
+                        }`}
+                      />
+                    )}
+                  </div>
+                  <span className="mt-3 block text-[13px] font-bold text-ink-900">{option.title}</span>
+                  <span className="mt-0.5 block text-[10px] leading-snug text-ink-400">
+                    {option.hint}
+                  </span>
+                </button>
+              );
+            })}
           </div>
-        </div>
+        </fieldset>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="mb-6 p-3.5 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2.5 text-xs text-rose-800">
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          
-          {/* Full Name */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Full Legal Name <span className="text-rose-500">*</span>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Full name */}
+          <div className="sm:col-span-2">
+            <label htmlFor="full-name" className="label">
+              Full legal name <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
-              <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
               <input
+                id="full-name"
                 type="text"
                 required
+                autoComplete="name"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder={accountType === 'worker' ? 'e.g., Rameshwar Lal Ahirwar' : 'e.g., Anil Sisodiya'}
-                className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700 focus:outline-none"
+                placeholder={accountType === 'worker' ? 'e.g. Rameshwar Lal Ahirwar' : 'e.g. Anil Sisodiya'}
+                className="field field-icon"
               />
             </div>
           </div>
 
-          {/* Mobile Number with Country Code */}
+          {/* Phone */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Mobile Number (with Country Code) <span className="text-rose-500">*</span>
+            <label htmlFor="phone" className="label">
+              Mobile number <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
-              <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Phone className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
               <input
+                id="phone"
                 type="tel"
                 required
+                autoComplete="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+91 98260 12345"
-                className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-mono border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700 focus:outline-none"
+                className="field field-icon font-mono"
               />
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">
-              Required for mutual contact verification cross-checks. Not displayed in public QR scans.
+            <p className="mt-1.5 text-[10px] leading-snug text-ink-400">
+              Used only for mutual contact checks — never printed on the QR pass.
             </p>
           </div>
 
-          {/* Email Address (Optional for workers, recommended for contractors) */}
+          {/* Email */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Email Address {accountType === 'worker' ? '(Optional)' : '<span className="text-rose-500">*</span>'}
+            <label htmlFor="email" className="label">
+              Email address{' '}
+              {accountType === 'contractor' ? (
+                <span className="text-rose-500">*</span>
+              ) : (
+                <span className="font-medium text-ink-400">(optional)</span>
+              )}
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
               <input
+                id="email"
                 type="email"
+                autoComplete="email"
                 required={accountType === 'contractor'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700 focus:outline-none"
+                className="field field-icon"
               />
             </div>
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Password <span className="text-rose-500">*</span>
-            </label>
-            <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="password"
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Minimum 6 characters"
-                className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700 focus:outline-none"
-              />
-            </div>
-            <p className="text-[11px] text-slate-400 mt-1">
-              Secured through authentication provider. Never stored in localStorage or client databases.
+            <p className="mt-1.5 text-[10px] leading-snug text-ink-400">
+              {accountType === 'contractor'
+                ? 'Required for audit correspondence and account recovery.'
+                : 'Add one to recover your account without a phone call.'}
             </p>
           </div>
 
-          {/* Worker Specific: Trade Category */}
+          {/* Password */}
+          <div className={accountType === 'worker' ? '' : 'sm:col-span-2'}>
+            <label htmlFor="new-password" className="label">
+              Password <span className="text-rose-500">*</span>
+            </label>
+            <div className="relative">
+              <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
+              <input
+                id="new-password"
+                type={showPassword ? 'text' : 'password'}
+                required
+                minLength={6}
+                autoComplete="new-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Minimum 6 characters"
+                className="field field-icon pr-11"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-2.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-lg text-ink-400 transition-colors hover:bg-sand-100 hover:text-ink-700 cursor-pointer"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+            <div className="mt-2 flex items-center gap-1.5" aria-hidden="true">
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                    passwordScore > i
+                      ? passwordScore === 1
+                        ? 'bg-rose-400'
+                        : passwordScore === 2
+                          ? 'bg-brass-400'
+                          : 'bg-forest-500'
+                      : 'bg-sand-200'
+                  }`}
+                />
+              ))}
+              <span className="ml-1 text-[9.5px] font-semibold text-ink-400">
+                {password.length === 0
+                  ? 'Not set'
+                  : passwordScore <= 1
+                    ? 'Weak'
+                    : passwordScore === 2
+                      ? 'Fair'
+                      : 'Strong'}
+              </span>
+            </div>
+          </div>
+
+          {/* Worker: trade */}
           {accountType === 'worker' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Trade or Work Category
+              <label htmlFor="trade" className="label">
+                Trade or work category
               </label>
               <div className="relative">
-                <Briefcase className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Briefcase className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
                 <select
+                  id="trade"
                   value={trade}
                   onChange={(e) => setTrade(e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700 focus:outline-none bg-white"
+                  className="field field-icon appearance-none bg-white pr-9"
                 >
-                  <option value="Head Mason (मुख्य राजमिस्त्री)">Head Mason (मुख्य राजमिस्त्री)</option>
-                  <option value="Steel Binder & Rigging Helper (सरिया बाइंडर)">Steel Binder & Rigging Helper (सरिया बाइंडर)</option>
-                  <option value="Site Electrician & Cable Jointer (साइट इलेक्ट्रीशियन)">Site Electrician & Cable Jointer (साइट इलेक्ट्रीशियन)</option>
-                  <option value="General Helper & Concrete Batching (बेलदार)">General Helper & Concrete Batching (बेलदार)</option>
-                  <option value="Tile Grinding & Surface Polisher (फिनिशिंग)">Tile Grinding & Surface Polisher (फिनिशिंग)</option>
-                  <option value="Carpenter & Shuttering (शटरिंग बढ़ई)">Carpenter & Shuttering (शटरिंग बढ़ई)</option>
-                  <option value="Plumber & Pipe Fitter (प्लंबर)">Plumber & Pipe Fitter (प्लंबर)</option>
-                  <option value="Painter & Putty Applicator (पेंटर)">Painter & Putty Applicator (पेंटर)</option>
+                  {TRADES.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
                 </select>
+                <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-ink-400">
+                  ▾
+                </span>
               </div>
             </div>
           )}
 
-          {/* Contractor Specific: Organization Name */}
+          {/* Contractor: organisation */}
           {accountType === 'contractor' && (
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Contractor Business / Agency Name
+            <div className="sm:col-span-2">
+              <label htmlFor="organization" className="label">
+                Firm / agency name
               </label>
               <div className="relative">
-                <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Building2 className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
                 <input
+                  id="organization"
                   type="text"
+                  autoComplete="organization"
                   value={organizationName}
                   onChange={(e) => setOrganizationName(e.target.value)}
-                  placeholder="e.g., Narmada Infra Engineering Ltd."
-                  className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700 focus:outline-none"
+                  placeholder="e.g. Narmada Infra Engineering Ltd."
+                  className="field field-icon"
                 />
               </div>
             </div>
           )}
+        </div>
 
-          {/* Consent Checkboxes */}
-          <div className="pt-2 space-y-3">
-            <label className="flex items-start gap-2.5 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={consentToShareContact}
-                onChange={(e) => setConsentToShareContact(e.target.checked)}
-                className="mt-1 rounded text-emerald-700 focus:ring-emerald-700"
-              />
-              <span className="text-xs text-slate-600">
-                I consent to sharing my registered mobile number with my authorized workplace counterpart (worker or contractor) for manual shift cross-checks.
-              </span>
-            </label>
+        {/* Consent */}
+        <div className="space-y-3 rounded-2xl border border-sand-200 bg-sand-50/70 p-4">
+          <label className="flex cursor-pointer items-start gap-2.5">
+            <input
+              type="checkbox"
+              checked={consentToShareContact}
+              onChange={(e) => setConsentToShareContact(e.target.checked)}
+              className="mt-0.5 h-3.5 w-3.5 shrink-0 rounded border-ink-300 accent-forest-700 focus:ring-forest-600"
+            />
+            <span className="text-[11px] leading-relaxed text-ink-600">
+              I consent to sharing my registered mobile number with my authorised workplace
+              counterpart for manual shift cross-checks.
+            </span>
+          </label>
 
-            <label className="flex items-start gap-2.5 cursor-pointer">
-              <input
-                type="checkbox"
-                required
-                checked={privacyAccepted}
-                onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                className="mt-1 rounded text-emerald-700 focus:ring-emerald-700"
-              />
-              <span className="text-xs text-slate-600">
-                I agree to the <button type="button" onClick={() => onNavigate('privacy')} className="text-emerald-800 font-semibold underline">Privacy and Data Use Policy</button>. My shift records and wages will be recorded under Madhya Pradesh labor welfare standards.
-              </span>
-            </label>
-          </div>
+          <label className="flex cursor-pointer items-start gap-2.5">
+            <input
+              type="checkbox"
+              required
+              checked={privacyAccepted}
+              onChange={(e) => setPrivacyAccepted(e.target.checked)}
+              className="mt-0.5 h-3.5 w-3.5 shrink-0 rounded border-ink-300 accent-forest-700 focus:ring-forest-600"
+            />
+            <span className="text-[11px] leading-relaxed text-ink-600">
+              I agree to the{' '}
+              <button
+                type="button"
+                onClick={() => onNavigate('privacy')}
+                className="font-semibold text-forest-800 underline decoration-forest-300 underline-offset-2 hover:text-forest-900 cursor-pointer"
+              >
+                Privacy and Data Use Policy
+              </button>
+              . My shift and wage records will be maintained under Madhya Pradesh labour welfare
+              standards.
+            </span>
+          </label>
+        </div>
 
-          {/* Submit CTA */}
-          <div className="pt-4">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`w-full py-3.5 rounded-xl font-bold text-sm text-white transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer ${
-                accountType === 'worker' ? 'bg-emerald-800 hover:bg-emerald-700' : 'bg-slate-900 hover:bg-slate-800'
-              }`}
-            >
-              <span>{isLoading ? 'Creating Account...' : `Register as ${accountType === 'worker' ? 'Worker' : 'Contractor'}`}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+        <button type="submit" disabled={isLoading} className="btn btn-primary btn-lg w-full">
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Creating your account…
+            </>
+          ) : (
+            <>
+              Register as {accountType === 'worker' ? 'worker' : 'contractor'}
+              <ArrowRight className="h-4 w-4" />
+            </>
+          )}
+        </button>
 
-          {/* Sign In Link */}
-          <div className="text-center pt-2 text-xs text-slate-500">
-            Already have an account?{' '}
-            <button
-              type="button"
-              onClick={() => onNavigate('sign-in')}
-              className="text-emerald-800 font-bold hover:underline cursor-pointer"
-            >
-              Sign In here
-            </button>
-          </div>
-
-        </form>
-
-      </div>
-    </div>
+        <p className="text-center text-[11.5px] text-ink-500">
+          Already registered?{' '}
+          <button
+            type="button"
+            onClick={() => onNavigate('sign-in')}
+            className="font-bold text-forest-800 hover:underline cursor-pointer"
+          >
+            Sign in instead
+          </button>
+        </p>
+      </form>
+    </AuthLayout>
   );
 };

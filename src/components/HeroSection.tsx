@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, QrCode, CheckCircle2, Volume2, ArrowRight } from 'lucide-react';
+import { Shield, QrCode, CheckCircle2, Volume2, ArrowRight, Sparkles } from 'lucide-react';
 import { Language, t } from '../services/i18n';
 import { speech } from '../services/speech';
 
@@ -9,6 +9,10 @@ interface HeroSectionProps {
   onNewWorkerClick: () => void;
 }
 
+/**
+ * Compact hero for the judge-demo workspace. Sits inside the main content
+ * column, so it is a rounded panel rather than a full-bleed band.
+ */
 export const HeroSection: React.FC<HeroSectionProps> = ({
   lang,
   onNavigateTab,
@@ -28,129 +32,131 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     }
   };
 
+  const stats = [
+    { value: '450M+', label: t('heroStatWorkforce', lang), tone: 'text-white' },
+    { value: '100%', label: t('heroStatMuster', lang), tone: 'text-forest-300' },
+    { value: '₹0', label: t('heroStatLoss', lang), tone: 'text-brass-300' },
+  ];
+
   return (
-    <div className="relative bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white overflow-hidden border-b border-slate-800 no-print">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
-          {/* Left Column: Mission, Title, Actions */}
-          <div className="lg:col-span-7 space-y-5 min-w-0">
-            
-            {/* Civic Tech & Innovation Tag */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-orange-400 font-medium">
-              <span className="flex items-center gap-1.5 bg-orange-950/80 border border-orange-800/80 px-2.5 py-1 rounded text-orange-300">
-                <Shield className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                <span>{t('heroBadge', lang)}</span>
-              </span>
-              <span className="text-slate-500 hidden sm:inline">·</span>
-              <span className="text-slate-400 text-[11px] sm:text-xs">
-                {t('heroWageStandard', lang)}
-              </span>
-            </div>
+    <section className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-forest-800 via-forest-900 to-ink-950 text-white no-print">
+      <div className="pointer-events-none absolute inset-0 bg-grid-dark opacity-50" aria-hidden="true" />
+      <div
+        className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full glow-brass opacity-40 blur-3xl animate-aurora"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -bottom-28 -left-20 h-64 w-64 rounded-full glow-emerald opacity-40 blur-3xl"
+        aria-hidden="true"
+      />
 
-            {/* Headline with balance constraint */}
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight break-words" style={{ textWrap: 'balance' }}>
-              {t('heroTitlePart1', lang)}{' '}
-              <span className="text-orange-400">{t('heroTitlePart2', lang)}</span>{' '}
-              {t('heroTitlePart3', lang)}
-            </h1>
-
-            {/* Subtitle */}
-            <p className="text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed max-w-2xl">
-              {t('heroSubtitle', lang)}
-            </p>
-
-            {/* Action buttons */}
-            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-2">
-              <button
-                onClick={() => onNavigateTab('attendance')}
-                className="flex items-center gap-2 px-4 sm:px-5 py-2.5 bg-orange-600 hover:bg-orange-500 text-white text-xs sm:text-sm font-semibold rounded-lg shadow-sm transition-colors cursor-pointer shrink-0"
-              >
-                <QrCode className="w-4 h-4 shrink-0" />
-                <span>{t('heroMarkAttendance', lang)}</span>
-                <ArrowRight className="w-4 h-4 ml-0.5 shrink-0" />
-              </button>
-
-              <button
-                onClick={() => onNavigateTab('ledger')}
-                className="flex items-center gap-2 px-3.5 sm:px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs sm:text-sm font-medium rounded-lg border border-slate-700 transition-colors cursor-pointer shrink-0"
-              >
-                <span>{t('heroViewLedger', lang)}</span>
-              </button>
-
-              <button
-                onClick={handleSpeakOverview}
-                className="flex items-center gap-1.5 px-3 py-2.5 bg-slate-800/80 hover:bg-slate-700 text-orange-300 text-xs font-medium rounded-lg border border-slate-700 transition-colors cursor-pointer shrink-0"
-                title={t('listenAudio', lang)}
-              >
-                <Volume2 className="w-4 h-4 text-orange-400 shrink-0" />
-                <span>{t('listenAudio', lang)}</span>
-              </button>
-
-              <button
-                onClick={onNewWorkerClick}
-                className="text-xs text-slate-400 hover:text-white underline underline-offset-4 cursor-pointer"
-              >
-                + {t('heroRegisterWorker', lang)}
-              </button>
-            </div>
-
-            {/* Quick Proof points */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-4 border-t border-slate-800 text-xs">
-              <div>
-                <div className="text-white font-bold font-mono text-sm sm:text-base tabular-nums">450M+</div>
-                <div className="text-slate-400 text-[10px] sm:text-[11px] leading-tight">{t('heroStatWorkforce', lang)}</div>
-              </div>
-              <div>
-                <div className="text-emerald-400 font-bold font-mono text-sm sm:text-base tabular-nums">100%</div>
-                <div className="text-slate-400 text-[10px] sm:text-[11px] leading-tight">{t('heroStatMuster', lang)}</div>
-              </div>
-              <div>
-                <div className="text-orange-400 font-bold font-mono text-sm sm:text-base tabular-nums">₹0</div>
-                <div className="text-slate-400 text-[10px] sm:text-[11px] leading-tight">{t('heroStatLoss', lang)}</div>
-              </div>
-            </div>
-
+      <div className="relative grid items-center gap-8 p-6 sm:p-9 lg:grid-cols-12 lg:gap-10">
+        <div className="space-y-5 lg:col-span-7">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.07] px-2.5 py-1 text-[10px] font-bold text-brass-200">
+              <Shield className="h-3 w-3 text-brass-300" />
+              {t('heroBadge', lang)}
+            </span>
+            <span className="text-[10px] font-semibold text-sand-200/62">
+              {t('heroWageStandard', lang)}
+            </span>
           </div>
 
-          {/* Right Column: High-Fidelity Editorial Card Image */}
-          <div className="lg:col-span-5 relative min-w-0">
-            <div className="relative rounded-2xl overflow-hidden border border-slate-700/80 shadow-2xl bg-slate-800">
-              <img
-                src="/assets/images/shram_setu_hero_pass_1792385013356.jpg"
-                alt="Artisan construction worker displaying verified Smart Shram Pass in Indore"
-                className="w-full h-64 sm:h-80 object-cover object-center"
-                referrerPolicy="no-referrer"
-                onError={(e) => {
-                  // Fallback to secondary static asset path if needed
-                  const target = e.currentTarget;
-                  if (!target.src.includes('/images/')) {
-                    target.src = '/images/shram_setu_hero_pass_1792385013356.jpg';
-                  }
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
-              
-              <div className="absolute bottom-3 left-3 right-3 p-2.5 sm:p-3 bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-700 text-xs">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <div className="min-w-0">
-                      <span className="font-semibold text-white truncate block">Rameshwar Lal Ahirwar</span>
-                      <span className="text-slate-400 text-[11px] block truncate">{t('heroCardSubtext', lang)}</span>
-                    </div>
+          <h1 className="max-w-2xl text-[1.6rem] leading-[1.12] text-white sm:text-[2.15rem] lg:text-[2.4rem]">
+            {t('heroTitlePart1', lang)}{' '}
+            <span className="text-brass-300">{t('heroTitlePart2', lang)}</span>{' '}
+            {t('heroTitlePart3', lang)}
+          </h1>
+
+          <p className="max-w-2xl text-[12px] leading-relaxed text-sand-200/65 sm:text-[13px]">
+            {t('heroSubtitle', lang)}
+          </p>
+
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button onClick={() => onNavigateTab('attendance')} className="btn btn-gold btn-sm">
+              <QrCode className="h-3.5 w-3.5" />
+              {t('heroMarkAttendance', lang)}
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+
+            <button
+              onClick={() => onNavigateTab('ledger')}
+              className="btn btn-sm border border-white/15 bg-white/[0.06] text-white hover:bg-white/[0.12]"
+            >
+              {t('heroViewLedger', lang)}
+            </button>
+
+            <button
+              onClick={handleSpeakOverview}
+              className="btn btn-sm border border-white/10 bg-transparent text-brass-200 hover:bg-white/[0.08]"
+              title={t('listenAudio', lang)}
+            >
+              <Volume2 className="h-3.5 w-3.5" />
+              {t('listenAudio', lang)}
+            </button>
+
+            <button
+              onClick={onNewWorkerClick}
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-sand-200/62 underline decoration-sand-200/30 underline-offset-4 transition-colors hover:text-white cursor-pointer"
+            >
+              <Sparkles className="h-3 w-3" />+ {t('heroRegisterWorker', lang)}
+            </button>
+          </div>
+
+          <div className="grid max-w-md grid-cols-3 gap-3 border-t border-white/10 pt-4">
+            {stats.map((stat) => (
+              <div key={stat.label}>
+                <div className={`font-mono text-[15px] font-bold tabular-nums sm:text-base ${stat.tone}`}>
+                  {stat.value}
+                </div>
+                <div className="mt-0.5 text-[10px] leading-tight text-sand-200/60">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative min-w-0 lg:col-span-5">
+          <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-ink-900 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.9)]">
+            <img
+              src="/assets/images/shram_setu_hero_pass_1792385013356.jpg"
+              alt="Construction worker displaying a verified Smart Shram Pass at an Indore site"
+              className="h-56 w-full object-cover object-center transition-transform duration-[1200ms] group-hover:scale-[1.04] sm:h-72"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.src.includes('/images/')) {
+                  target.src = '/images/shram_setu_hero_pass_1792385013356.jpg';
+                }
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/25 to-transparent" />
+
+            <div className="absolute inset-x-3 bottom-3 rounded-xl border border-white/10 bg-ink-950/85 p-3 backdrop-blur-md">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-forest-300" />
+                  <div className="min-w-0">
+                    <span className="block truncate text-[11.5px] font-bold text-white">
+                      Rameshwar Lal Ahirwar
+                    </span>
+                    <span className="block truncate text-[10px] text-sand-200/62">
+                      {t('heroCardSubtext', lang)}
+                    </span>
                   </div>
-                  <div className="text-left sm:text-right shrink-0">
-                    <span className="text-emerald-400 font-mono font-bold">₹550/day</span>
-                    <span className="text-[10px] text-slate-400 block">{t('heroCardBocw', lang)}</span>
-                  </div>
+                </div>
+                <div className="shrink-0 text-right">
+                  <span className="block font-mono text-[11.5px] font-bold text-brass-300">
+                    ₹550/day
+                  </span>
+                  <span className="block text-[9.5px] text-sand-200/60">
+                    {t('heroCardBocw', lang)}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
-    </div>
+    </section>
   );
 };

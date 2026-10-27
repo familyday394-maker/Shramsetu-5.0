@@ -53,7 +53,7 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
     return (
       <div
         style={{ width: size, height: size }}
-        className={`bg-slate-50 border border-slate-200 rounded flex items-center justify-center p-2 text-center text-[10px] text-slate-400 ${className}`}
+        className={`bg-sand-50 border border-sand-200 rounded flex items-center justify-center p-2 text-center text-[10px] text-ink-400 ${className}`}
       >
         <span>Loading QR...</span>
       </div>

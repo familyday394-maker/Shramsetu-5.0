@@ -17,6 +17,7 @@ import { verifyAuditChain } from '../services/cryptoAudit';
 import { evaluateAnomalies } from '../services/anomalyEngine';
 import { AuditVerificationResult, AnomalyAlert } from '../types';
 import { Language } from '../services/i18n';
+import { useModalBehavior } from '../hooks/useModalBehavior';
 
 interface JudgeDemoTourModalProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
   lang,
 }) => {
   const [activeTab, setActiveTab] = useState<'tour' | 'crypto' | 'anomalies' | 'reset'>('tour');
+  const modalRef = useModalBehavior(isOpen, onClose);
   
   // Crypto audit state
   const [auditResult, setAuditResult] = useState<AuditVerificationResult | null>(null);
@@ -161,38 +163,49 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden my-auto">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink-950/70 p-3 backdrop-blur-sm sm:p-5 animate-fade-up"
+      onClick={onClose}
+    >
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={lang === 'hi' ? 'जज डेमो टूर एवं सुरक्षा ऑडिट बेंच' : "Judges' Tour & Audit Test Bench"}
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
+        className="my-auto flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-[1.5rem] border border-sand-200 bg-white shadow-[0_40px_80px_-40px_rgba(8,19,15,0.6)] outline-none">
         
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-200 bg-slate-900 text-white flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-sand-200 bg-ink-900 text-white flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold">
+            <div className="w-8 h-8 rounded-lg bg-brass-600 flex items-center justify-center text-white font-bold">
               <ShieldCheck className="w-5 h-5 text-white" />
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-bold leading-tight">
                 {lang === 'hi' ? 'जज डेमो टूर एवं सुरक्षा ऑडिट बेंच' : "Judges' Tour & Audit Test Bench"}
               </h2>
-              <span className="text-[11px] text-orange-300 font-medium block">
+              <span className="text-[11px] text-brass-300 font-medium block">
                 Shram Setu 2.0 · Verified Architecture & Anomaly Controls
               </span>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white text-lg p-1 cursor-pointer"
+            aria-label="Close"
+            className="grid h-8 w-8 place-items-center rounded-lg text-sand-200/60 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-slate-200 bg-slate-50 text-xs font-semibold overflow-x-auto scrollbar-none">
+        <div className="flex border-b border-sand-200 bg-sand-50 text-xs font-semibold overflow-x-auto scrollbar-none">
           <button
             onClick={() => setActiveTab('tour')}
             className={`py-3 px-4 shrink-0 transition-colors cursor-pointer ${
-              activeTab === 'tour' ? 'border-b-2 border-orange-600 text-orange-600 bg-white font-bold' : 'text-slate-600 hover:text-slate-900'
+              activeTab === 'tour' ? 'border-b-2 border-brass-600 text-brass-600 bg-white font-bold' : 'text-ink-600 hover:text-ink-900'
             }`}
           >
             {lang === 'hi' ? 'प्रोटोटाइप अवलोकन' : 'Core Innovation Tour'}
@@ -200,7 +213,7 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
           <button
             onClick={() => setActiveTab('crypto')}
             className={`py-3 px-4 shrink-0 transition-colors cursor-pointer ${
-              activeTab === 'crypto' ? 'border-b-2 border-orange-600 text-orange-600 bg-white font-bold' : 'text-slate-600 hover:text-slate-900'
+              activeTab === 'crypto' ? 'border-b-2 border-brass-600 text-brass-600 bg-white font-bold' : 'text-ink-600 hover:text-ink-900'
             }`}
           >
             {lang === 'hi' ? 'क्रिप्टोग्राफिक ऑडिट (SHA-256)' : 'Cryptographic Audit Bench'}
@@ -208,7 +221,7 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
           <button
             onClick={() => setActiveTab('anomalies')}
             className={`py-3 px-4 shrink-0 transition-colors cursor-pointer ${
-              activeTab === 'anomalies' ? 'border-b-2 border-orange-600 text-orange-600 bg-white font-bold' : 'text-slate-600 hover:text-slate-900'
+              activeTab === 'anomalies' ? 'border-b-2 border-brass-600 text-brass-600 bg-white font-bold' : 'text-ink-600 hover:text-ink-900'
             }`}
           >
             {lang === 'hi' ? 'असंगति नियम (RULE-01 to 07)' : 'Anomaly Engine (RULE 01-07)'}
@@ -216,7 +229,7 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
           <button
             onClick={() => setActiveTab('reset')}
             className={`py-3 px-4 shrink-0 transition-colors cursor-pointer ${
-              activeTab === 'reset' ? 'border-b-2 border-orange-600 text-orange-600 bg-white font-bold' : 'text-slate-600 hover:text-slate-900'
+              activeTab === 'reset' ? 'border-b-2 border-brass-600 text-brass-600 bg-white font-bold' : 'text-ink-600 hover:text-ink-900'
             }`}
           >
             {lang === 'hi' ? 'डेटा रीसेट एवं बैकअप' : 'Safe Reset & Backup'}
@@ -224,53 +237,53 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
         </div>
 
         {/* Tab Content */}
-        <div className="p-5 overflow-y-auto space-y-4 text-xs text-slate-700 flex-1">
+        <div className="p-5 overflow-y-auto space-y-4 text-xs text-ink-700 flex-1">
           
           {/* TAB 1: Core Innovation Tour */}
           {activeTab === 'tour' && (
             <div className="space-y-4">
-              <div className="p-4 bg-orange-50 rounded-xl border border-orange-200">
-                <h3 className="font-bold text-orange-950 text-sm mb-1">
+              <div className="p-4 bg-brass-50 rounded-xl border border-brass-200">
+                <h3 className="font-bold text-brass-900 text-sm mb-1">
                   Defining Innovation: Absolute Wage Transparency
                 </h3>
-                <p className="text-orange-900 text-xs leading-relaxed">
+                <p className="text-brass-900 text-xs leading-relaxed">
                   Every wage explained, every change traceable, every payment status explicit, and every disagreement visible.
                   Empowering 450M+ unorganized construction and informal workers against wage theft, arbitrary cuts, and unrecorded overtime.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
-                  <span className="font-bold text-slate-900 block text-xs">1. Smart Shram Pass</span>
-                  <p className="text-slate-600 text-[11px]">
+                <div className="p-3 bg-sand-50 border border-sand-200 rounded-lg space-y-1">
+                  <span className="font-bold text-ink-900 block text-xs">1. Smart Shram Pass</span>
+                  <p className="text-ink-600 text-[11px]">
                     Dual-sided physical and digital card. QR code contains an <strong>opaque unguessable reference</strong> URL, completely sanitizing Aadhaar and wage balances for privacy.
                   </p>
                 </div>
 
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
-                  <span className="font-bold text-slate-900 block text-xs">2. Authoritative Wage Engine</span>
-                  <p className="text-slate-600 text-[11px]">
+                <div className="p-3 bg-sand-50 border border-sand-200 rounded-lg space-y-1">
+                  <span className="font-bold text-ink-900 block text-xs">2. Authoritative Wage Engine</span>
+                  <p className="text-ink-600 text-[11px]">
                     Evaluates exact integer paise arithmetic. <strong>₹650 × 4 days = ₹2,600</strong> gross. Recording a ₹1,300 payment leaves ₹1,300 outstanding. Payments never count as earnings.
                   </p>
                 </div>
 
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
-                  <span className="font-bold text-slate-900 block text-xs">3. SHA-256 Audit Chain</span>
-                  <p className="text-slate-600 text-[11px]">
+                <div className="p-3 bg-sand-50 border border-sand-200 rounded-lg space-y-1">
+                  <span className="font-bold text-ink-900 block text-xs">3. SHA-256 Audit Chain</span>
+                  <p className="text-ink-600 text-[11px]">
                     Deterministic canonical serialization with cryptographic predecessor hash pointers. Detects unauthorized in-place record alterations.
                   </p>
                 </div>
 
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
-                  <span className="font-bold text-slate-900 block text-xs">4. Explainable Anomaly Detection</span>
-                  <p className="text-slate-600 text-[11px]">
+                <div className="p-3 bg-sand-50 border border-sand-200 rounded-lg space-y-1">
+                  <span className="font-bold text-ink-900 block text-xs">4. Explainable Anomaly Detection</span>
+                  <p className="text-ink-600 text-[11px]">
                     Deterministic rules (RULE-01 to RULE-07) with neutral explanations. Ensures 4 days of 8 hours are never conflated as a 32-hour continuous shift.
                   </p>
                 </div>
               </div>
 
-              <div className="p-3 bg-slate-100 rounded-lg text-[11px] text-slate-600">
-                <strong>Project Origin:</strong> Senior Bal Vigyan Innovation Exhibit, Indore, Madhya Pradesh. Official Helpline: <strong className="text-slate-900 font-mono">7909348017</strong>.
+              <div className="p-3 bg-sand-100 rounded-lg text-[11px] text-ink-600">
+                <strong>Project Origin:</strong> Senior Bal Vigyan Innovation Exhibit, Indore, Madhya Pradesh. Official Helpline: <strong className="text-ink-900 font-mono">7909348017</strong>.
               </div>
             </div>
           )}
@@ -278,15 +291,15 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
           {/* TAB 2: Cryptographic Audit Bench */}
           {activeTab === 'crypto' && (
             <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-sand-50 border border-sand-200 rounded-xl">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-500">Chain Status</span>
-                  <h4 className="text-sm font-bold text-slate-900 font-mono">{tamperStatus}</h4>
+                  <span className="text-[10px] uppercase font-bold text-ink-500">Chain Status</span>
+                  <h4 className="text-sm font-bold text-ink-900 font-mono">{tamperStatus}</h4>
                 </div>
                 <button
                   onClick={runVerification}
                   disabled={isVerifying}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-600 hover:bg-orange-500 text-white rounded-lg font-semibold text-xs cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-brass-600 hover:bg-brass-500 text-white rounded-lg font-semibold text-xs cursor-pointer"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isVerifying ? 'animate-spin' : ''}`} />
                   <span>Verify Audit Chain</span>
@@ -297,12 +310,12 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
               {auditResult && (
                 <div className={`p-4 rounded-xl border ${
                   auditResult.outcome === 'INTEGRITY_PASSED'
-                    ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
+                    ? 'bg-forest-50 border-forest-300 text-forest-950'
                     : 'bg-rose-50 border-rose-300 text-rose-950'
                 }`}>
                   <div className="flex items-center gap-2 mb-1">
                     {auditResult.outcome === 'INTEGRITY_PASSED' ? (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                      <CheckCircle2 className="w-5 h-5 text-forest-600 shrink-0" />
                     ) : (
                       <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
                     )}
@@ -313,8 +326,8 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
               )}
 
               {/* Attack Scenarios */}
-              <div className="space-y-2 pt-2 border-t border-slate-200">
-                <span className="font-bold text-slate-800 text-xs block">Simulated Attack Scenarios for Evaluation:</span>
+              <div className="space-y-2 pt-2 border-t border-sand-200">
+                <span className="font-bold text-ink-800 text-xs block">Simulated Attack Scenarios for Evaluation:</span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <button
                     onClick={handleTamperRecord}
@@ -326,23 +339,23 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
 
                   <button
                     onClick={handleBreakLinkage}
-                    className="p-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 rounded-lg font-medium text-left cursor-pointer transition-colors"
+                    className="p-2.5 bg-brass-50 hover:bg-brass-100 border border-brass-200 text-brass-900 rounded-lg font-medium text-left cursor-pointer transition-colors"
                   >
                     <span className="block font-bold">2. Break Linkage</span>
-                    <span className="text-[10px] text-amber-700 block">Corrupt predecessor hash</span>
+                    <span className="text-[10px] text-brass-700 block">Corrupt predecessor hash</span>
                   </button>
 
                   <button
                     onClick={handleRestoreBaseline}
-                    className="p-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 rounded-lg font-medium text-left cursor-pointer transition-colors"
+                    className="p-2.5 bg-forest-50 hover:bg-forest-100 border border-forest-200 text-forest-900 rounded-lg font-medium text-left cursor-pointer transition-colors"
                   >
                     <span className="block font-bold">3. Restore Baseline</span>
-                    <span className="text-[10px] text-emerald-700 block">Reset valid genesis hash chain</span>
+                    <span className="text-[10px] text-forest-700 block">Reset valid genesis hash chain</span>
                   </button>
                 </div>
               </div>
 
-              <div className="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded border border-slate-200">
+              <div className="text-[11px] text-ink-500 bg-sand-50 p-2.5 rounded border border-sand-200">
                 <strong>Cryptographic Notice:</strong> Standard Web Crypto SHA-256 digests verify data integrity within the platform's verifiable event log. A locally held hash chain cannot protect against an adversary with root write access to the host device without remote timestamping.
               </div>
             </div>
@@ -351,38 +364,38 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
           {/* TAB 3: Anomaly Engine */}
           {activeTab === 'anomalies' && (
             <div className="space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                <span className="font-bold text-slate-800 text-xs">Deterministic Rule Findings (RULE-01 to RULE-07)</span>
-                <span className="text-[11px] text-slate-500 font-mono">{anomalies.length} active notifications</span>
+              <div className="flex items-center justify-between border-b border-sand-200 pb-2">
+                <span className="font-bold text-ink-800 text-xs">Deterministic Rule Findings (RULE-01 to RULE-07)</span>
+                <span className="text-[11px] text-ink-500 font-mono">{anomalies.length} active notifications</span>
               </div>
 
               {anomalies.length === 0 ? (
-                <div className="p-4 bg-emerald-50 text-emerald-800 rounded-xl border border-emerald-200 text-center">
+                <div className="p-4 bg-forest-50 text-forest-800 rounded-xl border border-forest-200 text-center">
                   No anomalies detected. All work records, payment totals, and shifts meet configured thresholds.
                 </div>
               ) : (
                 anomalies.map((alert, idx) => (
-                  <div key={idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                  <div key={idx} className="p-3 bg-sand-50 border border-sand-200 rounded-xl space-y-1">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-bold text-slate-900">
-                        <span className="px-1.5 py-0.5 bg-orange-100 text-orange-800 rounded font-mono text-[10px]">
+                      <div className="flex items-center gap-1.5 font-bold text-ink-900">
+                        <span className="px-1.5 py-0.5 bg-brass-100 text-brass-800 rounded font-mono text-[10px]">
                           {alert.ruleId}
                         </span>
                         <span>{alert.ruleName}</span>
                       </div>
-                      <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
+                      <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-brass-50 text-brass-800 border border-brass-200">
                         {alert.severity}
                       </span>
                     </div>
-                    <p className="text-slate-700 text-[11px]">{alert.explanation}</p>
-                    <p className="text-slate-500 text-[10px] italic">
+                    <p className="text-ink-700 text-[11px]">{alert.explanation}</p>
+                    <p className="text-ink-500 text-[10px] italic">
                       <strong>Suggested Action:</strong> {alert.suggestedAction}
                     </p>
                   </div>
                 ))
               )}
 
-              <div className="p-3 bg-slate-100 rounded text-[11px] text-slate-600">
+              <div className="p-3 bg-sand-100 rounded text-[11px] text-ink-600">
                 <strong>RULE-02 Safety Check:</strong> Individual 8-hour days are verified independently; four days of 8 hours are never aggregated as a continuous 32-hour shift.
               </div>
             </div>
@@ -391,12 +404,12 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
           {/* TAB 4: Safe Reset & Backup */}
           {activeTab === 'reset' && (
             <div className="space-y-4">
-              <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 text-amber-950 space-y-2">
+              <div className="p-4 bg-brass-50 rounded-xl border border-brass-200 text-brass-950 space-y-2">
                 <div className="flex items-center gap-2 font-bold text-xs">
-                  <AlertTriangle className="w-4 h-4 text-amber-600" />
+                  <AlertTriangle className="w-4 h-4 text-brass-600" />
                   <span>Safe Reset & Demonstration Isolation</span>
                 </div>
-                <p className="text-[11px] text-amber-900">
+                <p className="text-[11px] text-brass-900">
                   To protect real records, Shram Setu isolates demonstration data. You can choose whether to reset only the sample seed data or perform a complete factory wipe.
                 </p>
 
@@ -408,7 +421,7 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
                       value="demo_only"
                       checked={resetMode === 'demo_only'}
                       onChange={() => setResetMode('demo_only')}
-                      className="text-orange-600"
+                      className="text-brass-600"
                     />
                     <span><strong>Reset Demo Data Only (Recommended):</strong> Preserves newly registered real workers.</span>
                   </label>
@@ -420,7 +433,7 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
                       value="factory"
                       checked={resetMode === 'factory'}
                       onChange={() => setResetMode('factory')}
-                      className="text-orange-600"
+                      className="text-brass-600"
                     />
                     <span><strong>Factory Reset:</strong> Wipes all local records back to initial Bal Vigyan Indore prototype state.</span>
                   </label>
@@ -434,28 +447,28 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
                     {resetConfirmed ? 'Resetting...' : 'Confirm and Execute Reset'}
                   </button>
                   {resetConfirmed && (
-                    <span className="text-emerald-700 ml-2 font-semibold">✓ Reset completed!</span>
+                    <span className="text-forest-700 ml-2 font-semibold">✓ Reset completed!</span>
                   )}
                 </div>
               </div>
 
               {/* Versioned Backup Export / Restore */}
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                <span className="font-bold text-slate-900 text-xs block">Versioned Data Backup & Restore (JSON Interchange)</span>
-                <p className="text-slate-600 text-[11px]">
+              <div className="p-4 bg-sand-50 rounded-xl border border-sand-200 space-y-3">
+                <span className="font-bold text-ink-900 text-xs block">Versioned Data Backup & Restore (JSON Interchange)</span>
+                <p className="text-ink-600 text-[11px]">
                   Export all current workers, verified muster attendance, wage ledger records, and audit events into a portable schema v2.0 JSON file.
                 </p>
 
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     onClick={handleExportBackup}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-ink-900 hover:bg-ink-800 text-white rounded-lg text-xs font-semibold cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Export JSON Backup</span>
                   </button>
 
-                  <label className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold cursor-pointer">
+                  <label className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-ink-300 hover:bg-sand-100 text-ink-700 rounded-lg text-xs font-semibold cursor-pointer">
                     <Upload className="w-3.5 h-3.5" />
                     <span>Restore from JSON File</span>
                     <input
@@ -468,7 +481,7 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
                 </div>
 
                 {importStatus && (
-                  <div className="text-[11px] font-semibold text-emerald-700">{importStatus}</div>
+                  <div className="text-[11px] font-semibold text-forest-700">{importStatus}</div>
                 )}
               </div>
             </div>
@@ -477,10 +490,10 @@ export const JudgeDemoTourModal: React.FC<JudgeDemoTourModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-3 bg-slate-100 border-t border-slate-200 text-right">
+        <div className="p-3 bg-sand-100 border-t border-sand-200 text-right">
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg cursor-pointer"
+            className="px-4 py-1.5 bg-ink-900 hover:bg-ink-800 text-white text-xs font-semibold rounded-lg cursor-pointer"
           >
             Close
           </button>
