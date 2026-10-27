@@ -371,6 +371,28 @@
       0 18px 34px -16px rgba(22, 58, 43, 0.75);
   }
 
+  /* A single sheen sweeps across the filled buttons on hover. */
+  .btn-primary::after,
+  .btn-gold::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      100deg,
+      transparent 18%,
+      rgba(255, 255, 255, 0.34) 45%,
+      transparent 68%
+    );
+    transform: translateX(-130%);
+    transition: transform 0.85s var(--ease-out-expo);
+    pointer-events: none;
+  }
+  .btn-primary:not(:disabled):hover::after,
+  .btn-gold:not(:disabled):hover::after {
+    transform: translateX(130%);
+  }
+
   .btn-gold {
     background: linear-gradient(
       180deg,

@@ -286,15 +286,17 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, lang, onEnterJudgeDemo }
               </span>
             </Reveal>
 
-            <Reveal delay={80}>
-              <h1 className="mt-6 text-[2.35rem] leading-[1.04] tracking-[-0.02em] text-ink-950 sm:text-[3.25rem] lg:text-[3.5rem] xl:text-[3.9rem]">
+            <h1 className="mt-6 text-[2.35rem] leading-[1.04] tracking-[-0.02em] text-ink-950 sm:text-[3.25rem] lg:text-[3.5rem] xl:text-[3.9rem]">
+              <Reveal as="span" delay={60} className="block">
                 {copy.heroTitleA}
-                <br />
-                <span className="text-gradient-forest italic">{copy.heroTitleB}</span>
-                <br />
+              </Reveal>
+              <Reveal as="span" delay={150} className="block text-gradient-forest italic">
+                {copy.heroTitleB}
+              </Reveal>
+              <Reveal as="span" delay={240} className="block">
                 {copy.heroTitleC}
-              </h1>
-            </Reveal>
+              </Reveal>
+            </h1>
 
             <Reveal delay={160}>
               <p className="mt-6 max-w-xl text-[0.9375rem] leading-relaxed text-ink-500">
