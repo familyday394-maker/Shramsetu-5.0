@@ -142,6 +142,46 @@ try {
     record(`Route ${hash}`, text().includes(needle), text().includes(needle) ? undefined : 'content missing');
   }
 
+  // ---- Accessibility audit of the rendered DOM ---------------------------
+  const a11yAudit = (label: string) => {
+    const issues: string[] = [];
+
+    container.querySelectorAll('img').forEach((img) => {
+      if (!img.hasAttribute('alt')) issues.push(`img without alt: ${img.getAttribute('src')}`);
+    });
+
+    container.querySelectorAll('button').forEach((button) => {
+      const name =
+        (button.textContent || '').trim() ||
+        button.getAttribute('aria-label') ||
+        button.getAttribute('title');
+      if (!name) issues.push(`button without accessible name: ${button.className.slice(0, 60)}`);
+    });
+
+    const ids = new Map<string, number>();
+    container.querySelectorAll('[id]').forEach((el) => {
+      const id = el.id;
+      ids.set(id, (ids.get(id) || 0) + 1);
+    });
+    ids.forEach((count, id) => {
+      if (count > 1) issues.push(`duplicate id "${id}" x${count}`);
+    });
+
+    container.querySelectorAll('input, select, textarea').forEach((field) => {
+      const el = field as HTMLInputElement;
+      if (el.type === 'hidden') return;
+      const hasLabel =
+        (el.id && container.querySelector(`label[for="${el.id}"]`)) ||
+        el.getAttribute('aria-label') ||
+        el.closest('label');
+      if (!hasLabel) issues.push(`unlabelled field: ${el.id || el.name || el.type}`);
+    });
+
+    record(`A11y audit · ${label}`, issues.length === 0, issues.slice(0, 3).join('; '));
+  };
+
+  a11yAudit('home');
+
   // ---- Language switch ---------------------------------------------------
   await goto('#/home');
   const langToggle = container.querySelector(
@@ -168,6 +208,7 @@ try {
 
   // ---- Sign up as a worker ----------------------------------------------
   await goto('#/create-account');
+  a11yAudit('create account');
   const inputs = Array.from(container.querySelectorAll('input'));
   const nameInput = inputs.find((i) => i.id === 'full-name') as HTMLInputElement | undefined;
   const phoneInput = inputs.find((i) => i.id === 'phone') as HTMLInputElement | undefined;
@@ -204,6 +245,7 @@ try {
   await flush(160);
 
   record('Worker sign-up lands in portal', text().includes('Worker account'), `hash=${w.location.hash}`);
+  a11yAudit('worker portal');
   record('New account starts clean', text().includes('No shift records') || text().includes('Welcome to Shram Setu'));
   record('Portal shows approval tab', text().includes('Approvals'));
 
@@ -228,6 +270,14 @@ try {
   await flush(160);
   record('Judge demo launches', text().includes('Judge Demo') || text().includes('Evaluation'), `hash=${w.location.hash}`);
   record('Judge demo has worker pass tab', text().includes('Smart Pass') || text().includes('SHRAM SETU'));
+  a11yAudit('judge demo');
+
+  const welfareTab = findByText('button', 'Welfare');
+  await click(welfareTab);
+  await flush(120);
+  record('Judge demo welfare tab is reachable', text().toLowerCase().includes('welfare'));
+  const backToPass = findByText('button', 'Smart Pass');
+  await click(backToPass);
 
   const auditButton = findByText('button', 'Audit bench');
   await click(auditButton);

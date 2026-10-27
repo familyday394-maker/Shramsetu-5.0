@@ -17,6 +17,7 @@ import {
   Wallet,
   QrCode,
   AlertTriangle,
+  HeartHandshake,
 } from 'lucide-react';
 import { Worker, UserProfile } from '../types';
 import { Language } from '../services/i18n';
@@ -58,6 +59,7 @@ const DEMO_TABS = [
   { id: 'ledger', label: 'Wage Khata', icon: Wallet },
   { id: 'contractor', label: 'Contractor Roll', icon: LayoutDashboard },
   { id: 'grievance', label: 'Disputes', icon: AlertTriangle },
+  { id: 'welfare', label: 'Welfare', icon: HeartHandshake },
 ];
 
 
