@@ -14,6 +14,7 @@ export type AppRoute =
   | 'help'
   | 'about'
   | 'verify'
+  | 'not-found'
   | 'worker'
   | 'contractor'
   | 'judge-demo';
@@ -92,8 +93,11 @@ class Router {
         return { route: 'judge-demo', params };
       case 'home':
       case '':
-      default:
         return { route: 'home', params };
+      default:
+        // Unknown deep links should explain themselves rather than silently
+        // pretending the visitor landed on the home page.
+        return { route: 'not-found', params };
     }
   }
 

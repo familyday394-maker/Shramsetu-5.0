@@ -25,6 +25,7 @@ import { Privacy } from './components/public/Privacy';
 import { HelpContact } from './components/public/HelpContact';
 import { About } from './components/public/About';
 import { VerifyPass } from './components/public/VerifyPass';
+import { NotFound } from './components/public/NotFound';
 import { RouteFallback } from './components/ui/RouteFallback';
 
 // Authenticated workspaces and the exhibit suite are code-split: a public
@@ -140,6 +141,7 @@ export default function App() {
       help: 'Help & contact · Shram Setu 2.0',
       about: 'About the project · Shram Setu 2.0',
       verify: 'Verify a pass · Shram Setu 2.0',
+      'not-found': 'Page not found · Shram Setu 2.0',
       worker: 'Worker portal · Shram Setu 2.0',
       contractor: 'Contractor portal · Shram Setu 2.0',
       'judge-demo': 'Judge demo · Shram Setu 2.0',
@@ -318,6 +320,10 @@ export default function App() {
             {routeState.route === 'help' && <HelpContact onNavigate={handleNavigate} lang={lang} />}
 
             {routeState.route === 'about' && <About onNavigate={handleNavigate} lang={lang} />}
+
+            {routeState.route === 'not-found' && (
+              <NotFound onNavigate={handleNavigate} lang={lang} />
+            )}
 
             {routeState.route === 'verify' && (
               <VerifyPass

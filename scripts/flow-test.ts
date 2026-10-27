@@ -154,9 +154,12 @@ try {
   await flush(80);
   record('Language toggle returns to English', text().includes('Every shift recorded'));
 
-  // Unknown route falls back to home
+  // Unknown routes explain themselves
   await goto('#/does-not-exist');
-  record('Unknown route falls back home', text().includes('Every shift recorded'));
+  record('Unknown route renders a 404 page', text().includes('ROUTE NOT FOUND'));
+
+  await goto('#/home');
+  record('Home still reachable after 404', text().includes('Every shift recorded'));
 
   // ---- Verification depth link ------------------------------------------
   await goto('#/verify?refToken=WKR-INVALID-000');

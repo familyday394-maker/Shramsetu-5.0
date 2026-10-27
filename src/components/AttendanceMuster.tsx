@@ -159,11 +159,11 @@ export const AttendanceMuster: React.FC<AttendanceMusterProps> = ({
     <div className="space-y-6">
       
       {/* Top Banner / Site Status */}
-      <div className="bg-white p-5 rounded-2xl border border-sand-200 shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="rounded-2xl border border-sand-200 bg-white p-5 shadow-soft">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-forest-500" />
+              <span className="h-2.5 w-2.5 animate-pulse-ring rounded-full bg-forest-500" />
               <h2 className="text-lg font-bold text-ink-900">
                 {t('attendanceTitle', lang)}
               </h2>
@@ -176,7 +176,7 @@ export const AttendanceMuster: React.FC<AttendanceMusterProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleSpeakHistory}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-brass-50 hover:bg-brass-100 text-brass-700 text-xs font-semibold rounded-lg border border-brass-200 transition-colors cursor-pointer"
+              className="btn btn-sm border border-brass-200 bg-brass-50 text-brass-800 hover:bg-brass-100"
             >
               <Volume2 className="w-3.5 h-3.5 text-brass-600" />
               <span>{t('attendanceListenSummary', lang)}</span>
@@ -189,7 +189,7 @@ export const AttendanceMuster: React.FC<AttendanceMusterProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* PUNCH-IN FORM (5 Cols) */}
-        <div className="lg:col-span-5 bg-white p-4 sm:p-5 rounded-2xl border border-sand-200 shadow-xs space-y-4 min-w-0">
+        <div className="min-w-0 space-y-4 rounded-2xl border border-sand-200 bg-white p-4 shadow-soft sm:p-5 lg:col-span-5">
           <div className="flex items-center justify-between border-b border-sand-200 pb-3">
             <h3 className="text-sm font-bold text-ink-900 flex items-center gap-2">
               <Clock className="w-4 h-4 text-brass-600" />
@@ -209,7 +209,7 @@ export const AttendanceMuster: React.FC<AttendanceMusterProps> = ({
               <select
                 value={selectedSiteId}
                 onChange={(e) => setSelectedSiteId(e.target.value)}
-                className="w-full text-xs bg-sand-50 border border-ink-300 text-ink-800 rounded-lg p-2.5 font-medium focus:ring-1 focus:ring-brass-500 focus:outline-none"
+                className="field bg-white font-medium"
               >
                 {sites.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -235,8 +235,8 @@ export const AttendanceMuster: React.FC<AttendanceMusterProps> = ({
                 onClick={() => setShiftType('full_day')}
                 className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
                   shiftType === 'full_day'
-                    ? 'border-brass-500 bg-brass-50 text-brass-900 font-bold'
-                    : 'border-ink-200 hover:bg-ink-50 text-ink-700'
+                    ? 'border-brass-400 bg-brass-50 text-brass-900 font-bold ring-1 ring-brass-300 shadow-soft'
+                    : 'border-sand-200 bg-white text-ink-700 hover:-translate-y-0.5 hover:border-ink-300 hover:bg-sand-50'
                 }`}
               >
                 <div className="text-xs">{t('attendanceShiftFullDay', lang)}</div>
@@ -250,8 +250,8 @@ export const AttendanceMuster: React.FC<AttendanceMusterProps> = ({
                 onClick={() => setShiftType('half_day')}
                 className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
                   shiftType === 'half_day'
-                    ? 'border-brass-500 bg-brass-50 text-brass-900 font-bold'
-                    : 'border-ink-200 hover:bg-ink-50 text-ink-700'
+                    ? 'border-brass-400 bg-brass-50 text-brass-900 font-bold ring-1 ring-brass-300 shadow-soft'
+                    : 'border-sand-200 bg-white text-ink-700 hover:-translate-y-0.5 hover:border-ink-300 hover:bg-sand-50'
                 }`}
               >
                 <div className="text-xs">{t('attendanceShiftHalfDay', lang)}</div>
@@ -265,8 +265,8 @@ export const AttendanceMuster: React.FC<AttendanceMusterProps> = ({
                 onClick={() => setShiftType('overtime_2h')}
                 className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
                   shiftType === 'overtime_2h'
-                    ? 'border-brass-500 bg-brass-50 text-brass-900 font-bold'
-                    : 'border-ink-200 hover:bg-ink-50 text-ink-700'
+                    ? 'border-brass-400 bg-brass-50 text-brass-900 font-bold ring-1 ring-brass-300 shadow-soft'
+                    : 'border-sand-200 bg-white text-ink-700 hover:-translate-y-0.5 hover:border-ink-300 hover:bg-sand-50'
                 }`}
               >
                 <div className="text-xs">{t('attendanceShiftOvertime2h', lang)}</div>
@@ -280,8 +280,8 @@ export const AttendanceMuster: React.FC<AttendanceMusterProps> = ({
                 onClick={() => setShiftType('overtime_4h')}
                 className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
                   shiftType === 'overtime_4h'
-                    ? 'border-brass-500 bg-brass-50 text-brass-900 font-bold'
-                    : 'border-ink-200 hover:bg-ink-50 text-ink-700'
+                    ? 'border-brass-400 bg-brass-50 text-brass-900 font-bold ring-1 ring-brass-300 shadow-soft'
+                    : 'border-sand-200 bg-white text-ink-700 hover:-translate-y-0.5 hover:border-ink-300 hover:bg-sand-50'
                 }`}
               >
                 <div className="text-xs">{t('attendanceShiftOvertime4h', lang)}</div>
@@ -331,7 +331,7 @@ export const AttendanceMuster: React.FC<AttendanceMusterProps> = ({
             type="button"
             disabled={isSimulatingScan}
             onClick={handlePunchAttendance}
-            className="w-full py-3 bg-brass-600 hover:bg-brass-500 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="btn btn-gold w-full"
           >
             {isSimulatingScan ? (
               <>
@@ -360,7 +360,7 @@ export const AttendanceMuster: React.FC<AttendanceMusterProps> = ({
         </div>
 
         {/* MUSTER ROLL HISTORY (7 Cols) */}
-        <div className="lg:col-span-7 bg-white p-4 sm:p-5 rounded-2xl border border-sand-200 shadow-xs space-y-4 min-w-0">
+        <div className="min-w-0 space-y-4 rounded-2xl border border-sand-200 bg-white p-4 shadow-soft sm:p-5 lg:col-span-7">
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-sand-200 pb-3">
             <div>
