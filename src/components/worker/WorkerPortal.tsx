@@ -29,6 +29,7 @@ import { Language, t, bi, formatCurrency, getLocalizedTrade, getLocalizedSkill }
 import { QRCodeDisplay } from '../QRCodeDisplay';
 import { WorkerCard } from '../WorkerCard';
 import { ContactVerificationModal } from '../ContactVerificationModal';
+import { buildVerifyUrl } from '../../services/verifyLink';
 
 interface WorkerPortalProps {
   user: UserProfile;
@@ -176,9 +177,7 @@ export const WorkerPortal: React.FC<WorkerPortalProps> = ({ user, lang, onNaviga
     loadData();
   };
 
-  const qrPayloadUrl = typeof window !== 'undefined' && window.location.origin
-    ? `${window.location.origin}/#/verify?refToken=${encodeURIComponent(user.qrReferenceToken || user.id)}`
-    : `https://shramsetu.in/#/verify?refToken=${encodeURIComponent(user.qrReferenceToken || user.id)}`;
+  const qrPayloadUrl = buildVerifyUrl(user.qrReferenceToken || user.id);
 
   const copyQrToken = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {

@@ -87,6 +87,24 @@ component shares the same rhythm:
 - Per-route document titles, descriptive link labels and image `alt` text.
 - Print stylesheet for the Smart Shram Pass (A4, colour-accurate).
 
+## Offline single-file edition
+
+For an exhibition desk, a labour office or a venue with no reliable internet, the entire
+application can be compiled into **one file** that runs by double-clicking — no server, no
+install, no network:
+
+```bash
+npm run build:offline    # → offline/index.html  (~1.9 MB)
+npm run test:offline     # boots that file from disk in jsdom and asserts it renders
+```
+
+Everything is embedded: the minified application, the stylesheet, four variable typefaces
+(Fraunces, Plus Jakarta Sans, JetBrains Mono, Noto Sans Devanagari) and both photographs as
+data URIs. Routing is hash-based, so deep links keep working from `file://`; records live in
+`localStorage`, and a shim takes over if the browser blocks storage for local files. The
+QR payload falls back to the canonical public address because a `file://` document has no
+usable origin.
+
 ## Testing
 
 ```bash
@@ -94,6 +112,7 @@ npm test              # 75 unit tests: wage engine, crypto chain, auth, QR round
 npm run test:render   # server-renders every public screen, asserts key content
 npm run test:ui       # jsdom client flow: routes, sign-up, portals, demo, modals
 npm run test:all      # typecheck + all of the above
+npm run test:offline  # boots the single-file offline build from disk
 ```
 
 ## Notes

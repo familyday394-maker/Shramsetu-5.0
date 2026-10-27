@@ -12,7 +12,9 @@
     "test": "tsx scripts/run-all-tests.ts",
     "test:render": "tsx scripts/smoke-render.ts",
     "test:ui": "tsx scripts/flow-test.ts",
-    "test:all": "tsc --noEmit && tsx scripts/run-all-tests.ts && tsx scripts/smoke-render.ts && tsx scripts/flow-test.ts"
+    "test:all": "tsc --noEmit && tsx scripts/run-all-tests.ts && tsx scripts/smoke-render.ts && tsx scripts/flow-test.ts",
+    "build:offline": "tsx scripts/build-offline.ts",
+    "test:offline": "tsx scripts/offline-smoke.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
@@ -30,6 +32,10 @@
     "vite": "^8.3.0"
   },
   "devDependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/noto-sans-devanagari": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
     "@types/express": "^4.17.21",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^22.14.0",

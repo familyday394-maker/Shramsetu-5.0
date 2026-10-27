@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { QRCodeDisplay } from './QRCodeDisplay';
+import { buildVerifyUrl } from '../services/verifyLink';
 import { 
   RotateCw, 
   Volume2, 
@@ -82,9 +83,7 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
   }, []);
 
   // Standards-compliant opaque reference URL (Zero PII, no wages, no Aadhaar leaked in QR)
-  const qrPayload = typeof window !== 'undefined' && window.location.origin
-    ? `${window.location.origin}/#/verify?refToken=${encodeURIComponent(worker.id)}`
-    : `https://shramsetu.in/#/verify?refToken=${encodeURIComponent(worker.id)}`;
+  const qrPayload = buildVerifyUrl(worker.id);
 
   const localizedTrade = getLocalizedTrade(worker.trade, lang);
   const skillInfo = getLocalizedSkill(worker.skillLevel, lang);
