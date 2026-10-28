@@ -7,3 +7,5 @@ coverage/
 .env*
 !.env.example
 dist-single/
+report/__pycache__/
+report/_*
